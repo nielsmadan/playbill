@@ -65,6 +65,10 @@ workflow when its target is disabled or missing. Host adapters determine when
 request text and candidate file paths are available; a session-start event alone
 does not necessarily contain the first user request.
 
+Glob matching is bounded by pattern and path length. `?` consumes one Unicode
+code point. Trailing and repeated whole-segment globstars may consume no segments:
+`src/**` and `src/**/**` both match `src` as well as its descendants.
+
 ## Pipelines
 
 ```yaml
@@ -279,7 +283,10 @@ data nodes, 64 data levels, 1,000 array items/registry entries, 256 control-flow
 nodes, and 16 control-flow levels. YAML syntax nodes count toward the data limit
 before conversion. Worst-case expanded step/loop visits may not exceed 10,000;
 nested caps multiply. Rendered instructions may not exceed 64 KiB, checked during
-validation before retaining the prose snapshot. These are authoring/validation bounds, not execution
+validation before retaining the prose snapshot. Adapters apply their host's
+delivery limit separately; the [Claude adapter](adapters/claude.md#runtime-boundary-and-limits)
+requires the complete context, including its invocation mapping and event text,
+to fit 10,000 characters. These are authoring/validation bounds, not execution
 enforcement. Diagnostics reject oversized data instead of rendering it.
 
 Production is TypeScript ESM compiled to Node JavaScript, supported on **Node

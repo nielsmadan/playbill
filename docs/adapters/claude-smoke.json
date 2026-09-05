@@ -1,0 +1,173 @@
+{
+  "date": "2026-09-05",
+  "claudeVersion": "2.1.261",
+  "nodeVersion": "v24.16.0",
+  "command": "npm run build && node test/smoke/claude.mjs",
+  "repeatCommand": "npm run build && node scripts/smoke/claude.mjs",
+  "runnerMovedAfterTrials": "The paid runner moved outside test/ to keep Node default test discovery free of billed calls. The command field preserves the actual original invocation.",
+  "pathSubstitution": "<checkout> is the absolute repository checkout; full original argv remains in each local fixture command.json.",
+  "trials": [
+    {
+      "trial": 1,
+      "fixture": ".test-runs-claude-smoke-1788636534070",
+      "outcome": "failed native mapping expectation; correct task and native activation confirmed",
+      "command": {
+        "executable": "claude",
+        "args": [
+          "-p",
+          "--plugin-dir",
+          "<checkout>/",
+          "--setting-sources",
+          "project,local",
+          "--strict-mcp-config",
+          "--output-format",
+          "stream-json",
+          "--verbose",
+          "--include-hook-events",
+          "--no-session-persistence",
+          "--permission-mode",
+          "dontAsk",
+          "--allowedTools",
+          "Read,Write,Edit,Bash,Skill,Glob,Grep",
+          "--effort",
+          "low",
+          "--max-turns",
+          "12",
+          "--max-budget-usd",
+          "2",
+          "[playbill:smoke] Implement TASK.md. Work only in this task directory. Use Node builtins. Do not dispatch agents, install dependencies, or use git."
+        ],
+        "cwd": "<checkout>/.test-runs-claude-smoke-1788636534070",
+        "environment": {
+          "PLAYBILL_PROJECT_ROOT": "<checkout>/.test-runs-claude-smoke-1788636534070",
+          "PLAYBILL_MACHINE_DIR": "<checkout>/.test-runs-claude-smoke-1788636534070/machine",
+          "PLAYBILL_DEFAULTS_DIR": "<checkout>/.test-runs-claude-smoke-1788636534070/defaults",
+          "PLAYBILL_STATE_DIR": "<checkout>/.test-runs-claude-smoke-1788636534070/state",
+          "PLAYBILL_CLAUDE_INVENTORY": "<checkout>/.test-runs-claude-smoke-1788636534070/native-inventory.json"
+        },
+        "timeoutMs": 120000,
+        "maxOutputBytes": 2097152
+      },
+      "durationMs": 17372,
+      "claudeExit": {
+        "code": 0,
+        "signal": null
+      },
+      "costUsd": 0.12984579999999998,
+      "model": ["claude-sonnet-5"],
+      "result": "success",
+      "permissionDenials": [],
+      "nativeSkill": {
+        "id": "toolu_01XRTVD6KS9RjEDVd2aMeUE1",
+        "invocation": "implementation",
+        "resultId": "toolu_01XRTVD6KS9RjEDVd2aMeUE1",
+        "isError": false,
+        "result": "Launching skill: implementation"
+      },
+      "hooks": [
+        {
+          "event": "SessionStart",
+          "exitCode": 0,
+          "contextBytes": 0,
+          "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "event": "UserPromptSubmit",
+          "exitCode": 0,
+          "contextBytes": 453,
+          "contextSha256": "57e5e0700f4a8f8d7ad30f4c6ff34cb6e4ed5f01856d7b38e33225ee3224f3b5"
+        }
+      ],
+      "verification": {
+        "testSha256": "021b2c15cd9da3029c7cea37e3ee4ae3b6d4fd5494a1209ae6b47577f59f6e52",
+        "testStatus": 0,
+        "testOutput": "✔ mixed input (0.451458ms)\n✔ empty array (0.07175ms)\n✔ invalid input (0.196291ms)\n✔ preserves input (0.062208ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 52.588959\n",
+        "nativeInvocation": "implementation",
+        "nativeToolResult": "Launching skill: implementation",
+        "mappingMatched": false
+      }
+    },
+    {
+      "trial": 2,
+      "fixture": ".test-runs-claude-smoke-1788636834055",
+      "outcome": "passed corrected native mapping seam",
+      "retryAuthorization": "Coordinator approved one integration retry after concrete native naming defect.",
+      "command": {
+        "executable": "claude",
+        "args": [
+          "-p",
+          "--plugin-dir",
+          "<checkout>/",
+          "--setting-sources",
+          "project,local",
+          "--strict-mcp-config",
+          "--output-format",
+          "stream-json",
+          "--verbose",
+          "--include-hook-events",
+          "--no-session-persistence",
+          "--permission-mode",
+          "dontAsk",
+          "--allowedTools",
+          "Read,Write,Edit,Bash,Skill,Glob,Grep",
+          "--effort",
+          "low",
+          "--max-turns",
+          "12",
+          "--max-budget-usd",
+          "2",
+          "[playbill:smoke] Implement TASK.md. Work only in this task directory. Use Node builtins. Do not dispatch agents, install dependencies, or use git."
+        ],
+        "cwd": "<checkout>/.test-runs-claude-smoke-1788636834055",
+        "environment": {
+          "PLAYBILL_PROJECT_ROOT": "<checkout>/.test-runs-claude-smoke-1788636834055",
+          "PLAYBILL_MACHINE_DIR": "<checkout>/.test-runs-claude-smoke-1788636834055/machine",
+          "PLAYBILL_DEFAULTS_DIR": "<checkout>/.test-runs-claude-smoke-1788636834055/defaults",
+          "PLAYBILL_STATE_DIR": "<checkout>/.test-runs-claude-smoke-1788636834055/state",
+          "PLAYBILL_CLAUDE_INVENTORY": "<checkout>/.test-runs-claude-smoke-1788636834055/native-inventory.json"
+        },
+        "timeoutMs": 120000,
+        "maxOutputBytes": 2097152,
+        "testSha256": "021b2c15cd9da3029c7cea37e3ee4ae3b6d4fd5494a1209ae6b47577f59f6e52"
+      },
+      "durationMs": 29127,
+      "claudeExit": {
+        "code": 0,
+        "signal": null
+      },
+      "costUsd": 0.1585172,
+      "model": ["claude-sonnet-5"],
+      "result": "success",
+      "permissionDenials": [],
+      "nativeSkill": {
+        "id": "toolu_01UAeP4SnuKummNxZjRr2ZaF",
+        "invocation": "playbill-smoke-implement",
+        "resultId": "toolu_01UAeP4SnuKummNxZjRr2ZaF",
+        "isError": false,
+        "result": "Launching skill: playbill-smoke-implement"
+      },
+      "hooks": [
+        {
+          "event": "SessionStart",
+          "exitCode": 0,
+          "contextBytes": 0,
+          "contextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "event": "UserPromptSubmit",
+          "exitCode": 0,
+          "contextBytes": 453,
+          "contextSha256": "57e5e0700f4a8f8d7ad30f4c6ff34cb6e4ed5f01856d7b38e33225ee3224f3b5"
+        }
+      ],
+      "verification": {
+        "testSha256": "021b2c15cd9da3029c7cea37e3ee4ae3b6d4fd5494a1209ae6b47577f59f6e52",
+        "testStatus": 0,
+        "testOutput": "✔ mixed input (0.49075ms)\n✔ empty array (0.080833ms)\n✔ invalid input (0.200625ms)\n✔ preserves input (0.063334ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 52.007709\n",
+        "nativeInvocation": "playbill-smoke-implement",
+        "nativeToolResult": "Launching skill: playbill-smoke-implement",
+        "mappingMatched": true
+      }
+    }
+  ]
+}

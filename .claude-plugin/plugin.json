@@ -1,0 +1,6 @@
+{
+  "name": "playbill",
+  "version": "0.1.0",
+  "description": "Compose configured skill workflows into concise model-executed instructions.",
+  "hooks": "./adapters/claude/hooks.json"
+}

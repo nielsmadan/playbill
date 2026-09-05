@@ -3,8 +3,9 @@
 Playbill binds named workflow slots to installed skills, declares when workflows
 can start, and renders YAML pipelines into instructions for coding agents.
 
-The shared validator and CLI are implemented. Harness adapters and the default
-workflow suite are later milestones. This is a model-executed router; validation
+The shared validator, CLI, and Claude Code reference adapter are implemented.
+The other harness adapters and default workflow suite are later milestones.
+This is a model-executed router; validation
 checks declarations and composition, not whether a model follows instructions.
 
 Use Node 24.x:
@@ -20,6 +21,9 @@ See [formats, contracts, registry and API](docs/formats.md) for custom pipelines
 machine/project precedence, and the explicit registry interface. `playbill --help`
 lists CLI options and exit statuses. No global configuration is needed for the
 fixture commands.
+
+The [Claude adapter guide](docs/adapters/claude.md) covers local plugin loading,
+configuration discovery, workflow requests, native skills, and smoke evidence.
 
 Development commands:
 
