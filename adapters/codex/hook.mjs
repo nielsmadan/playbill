@@ -1,3 +1,3 @@
 import { hook } from '../hook.mjs';
 
-await hook('claude');
+await hook('codex');

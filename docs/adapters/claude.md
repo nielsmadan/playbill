@@ -270,3 +270,9 @@ namespaces, precedence, visibility, and invocation permission;
 hook paths, plugin loading, and validation. These describe a broader host feature
 set than this adapter's supported discovery subset. The real smoke result takes
 precedence where its observed naming differs.
+
+M3 adds the resolved project root to the native appendix so artifact paths stay
+correct when Claude starts in a repository subdirectory. The complete 10,000
+character bound includes that line. Both hook bootstraps also preserve
+`UserPromptSubmit` in an import/build failure response. These refinements are
+covered by offline tests; the original M2 live evidence remains unchanged.

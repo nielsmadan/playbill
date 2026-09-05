@@ -1,0 +1,434 @@
+{
+  "date": "2026-09-05",
+  "nodeVersion": "24.16.0",
+  "pathSubstitution": "<checkout> replaces the absolute checkout path; each original fixture retains exact argv and environment overrides.",
+  "postTrialRefinements": "Artifact-root appendices and unmatched Pi/OpenCode continuation restoration were refined after these trials and verified offline. The smoke runner subsequently gained safe shell quoting, bounded capture on overflow, and failure recording. No paid reruns were made.",
+  "defaultCodexInventoryProbe": {
+    "nativeApiSucceeded": true,
+    "nativeSkillCount": 69,
+    "usableDefaultInventory": false,
+    "reasons": [
+      "Two native skill-creator entries are ambiguous.",
+      "One unrelated nono plugin skill has malformed frontmatter; normalized as unavailable with a reason."
+    ],
+    "modelCalls": 0
+  },
+  "trials": [
+    {
+      "host": "codex",
+      "fixture": "<checkout>/.test-runs-codex-smoke-1788639333066",
+      "executable": "codex",
+      "args": [
+        "exec",
+        "--json",
+        "--ephemeral",
+        "-C",
+        "<checkout>/.test-runs-codex-smoke-1788639333066",
+        "--skip-git-repo-check",
+        "-s",
+        "danger-full-access",
+        "-c",
+        "approval_policy=\"never\"",
+        "-c",
+        "features.multi_agent=false",
+        "-c",
+        "model_reasoning_effort=\"low\"",
+        "-m",
+        "gpt-5.6-sol",
+        "-c",
+        "features.hooks=true",
+        "-c",
+        "projects={\"<checkout>/.test-runs-codex-smoke-1788639333066\"={trust_level=\"trusted\"}}",
+        "-c",
+        "hooks.state={\"<checkout>/.test-runs-codex-smoke-1788639333066/.codex/hooks.json:session_start:0:0\"={trusted_hash=\"sha256:cd90d3382008619186bd5006a69a583af25fe767cbd8a5251e031d37a33f61ca\"},\"<checkout>/.test-runs-codex-smoke-1788639333066/.codex/hooks.json:user_prompt_submit:0:0\"={trusted_hash=\"sha256:f275eea86dcd1323cb3fd1762302e7299c031ca3da7c1bfad38a51d699f0e6ab\"}}",
+        "[playbill:smoke] Implement TASK.md. Work only in this task directory. Use Node builtins. Preserve the original test files. Do not dispatch agents, install dependencies, or use git."
+      ],
+      "environment": {
+        "PLAYBILL_PROJECT_ROOT": "<checkout>/.test-runs-codex-smoke-1788639333066",
+        "PLAYBILL_MACHINE_DIR": "<checkout>/.test-runs-codex-smoke-1788639333066/machine",
+        "PLAYBILL_DEFAULTS_DIR": "<checkout>/.test-runs-codex-smoke-1788639333066/defaults",
+        "PLAYBILL_STATE_DIR": "<checkout>/.test-runs-codex-smoke-1788639333066/state",
+        "PLAYBILL_NODE": "/Users/nielsmadan/.local/share/mise/installs/node/24.16.0/bin/node",
+        "PLAYBILL_CODEX_INVENTORY": "<checkout>/.test-runs-codex-smoke-1788639333066/native-inventory.json"
+      },
+      "timeoutMs": 120000,
+      "maxOutputBytes": 2097152,
+      "maxStderrBytes": 262144,
+      "turnLimit": null,
+      "budgetUSD": null,
+      "testSha256": "021b2c15cd9da3029c7cea37e3ee4ae3b6d4fd5494a1209ae6b47577f59f6e52",
+      "originalTest": "import assert from 'node:assert/strict';\nimport {test} from 'node:test';\nimport {sumEvenSquares} from './solution.mjs';\ntest('mixed input', () => assert.equal(sumEvenSquares([2, 3, -4, 2.5, '6', null, Infinity]), 20));\ntest('empty array', () => assert.equal(sumEvenSquares([]), 0));\ntest('invalid input', () => assert.throws(() => sumEvenSquares('bad'), TypeError));\ntest('preserves input', () => { const values = Object.freeze([2, 4]); assert.equal(sumEvenSquares(values), 20); });\n",
+      "adapterSha256": "d421d79d2249d16f29266b4d2f385ce5cc7f1416555a11f6faa8469ef2740e12",
+      "inventoryMode": "explicit attested snapshot; native .agents/skills registration",
+      "harnessVersion": "codex-cli 0.153.4",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "durationMs": 48790,
+      "rawSha256": "9da31711f40af05e4fe172d4f21d02869c5d9ad237256f241ccdd19b090fd9f3",
+      "usage": {
+        "input_tokens": 205696,
+        "cached_input_tokens": 188416,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1143,
+        "reasoning_output_tokens": 99
+      },
+      "costUSD": null,
+      "verification": {
+        "testIntact": true,
+        "testSha256": "021b2c15cd9da3029c7cea37e3ee4ae3b6d4fd5494a1209ae6b47577f59f6e52",
+        "testStatus": 0,
+        "nativeActivation": true,
+        "activation": {
+          "type": "item.completed",
+          "item": {
+            "id": "item_1",
+            "type": "command_execution",
+            "command": "/bin/zsh -lc \"sed -n '1,240p' .agents/skills/playbill-smoke-implement/SKILL.md && printf '\\\\n--- TASK.md ---\\\\n' && sed -n '1,260p' TASK.md && printf '\\\\n--- files ---\\\\n' && rg --files -g '\"'!solution.mjs'\"' -g '\"'!receipt.md'\"'\"",
+            "aggregated_output": "---\nname: playbill-smoke-implement\ndescription: Implements the isolated Playbill adapter smoke task when selected by its workflow.\n---\nImplement TASK.md in solution.mjs. Run node --test test.mjs and correct failures. Write receipt.md containing exactly `skill-receipt: pb-m3-native-seam` on its first line, then the test outcome.\n\n--- TASK.md ---\nImplement export function sumEvenSquares(values) in solution.mjs. Sum the squares of even integers; ignore other values. Return 0 for an empty array and throw TypeError for a non-array. Preserve the input. Run node --test test.mjs.\n\n--- files ---\noriginal-test.mjs\nhooks-trusted.json\nTASK.md\ncommand.json\nhooks-before-trust.json\nstate/pb-d2e03702e184de5f10ed9d8dc66cc8544873649d6ee7e0a29e06e5f562c9d774.json\nnative-inventory.json\nhook-output.jsonl\nobserve-hook.mjs\ntest.mjs\n",
+            "exit_code": 0,
+            "status": "completed"
+          }
+        },
+        "mappingMatched": true,
+        "receiptMatched": true
+      },
+      "outcome": "passed",
+      "independentChecks": "✔ mixed input (0.428458ms)\n✔ empty array (0.064709ms)\n✔ invalid input (0.189667ms)\n✔ preserves input (0.058292ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 49.773792\n",
+      "rawTraceSha256": "9da31711f40af05e4fe172d4f21d02869c5d9ad237256f241ccdd19b090fd9f3",
+      "hookTrust": {
+        "cwd": "<checkout>/.test-runs-codex-smoke-1788639333066",
+        "hooks": [
+          {
+            "key": "<checkout>/.test-runs-codex-smoke-1788639333066/.codex/hooks.json:session_start:0:0",
+            "eventName": "sessionStart",
+            "handlerType": "command",
+            "command": "\"/Users/nielsmadan/.local/share/mise/installs/node/24.16.0/bin/node\" \"<checkout>/.test-runs-codex-smoke-1788639333066/observe-hook.mjs\"",
+            "async": false,
+            "matcher": null,
+            "timeoutSec": 15,
+            "statusMessage": null,
+            "additionalContextLimit": 0,
+            "sourcePath": "<checkout>/.test-runs-codex-smoke-1788639333066/.codex/hooks.json",
+            "source": "project",
+            "pluginId": null,
+            "displayOrder": 10,
+            "enabled": true,
+            "isManaged": false,
+            "currentHash": "sha256:cd90d3382008619186bd5006a69a583af25fe767cbd8a5251e031d37a33f61ca",
+            "trustStatus": "trusted"
+          },
+          {
+            "key": "<checkout>/.test-runs-codex-smoke-1788639333066/.codex/hooks.json:user_prompt_submit:0:0",
+            "eventName": "userPromptSubmit",
+            "handlerType": "command",
+            "command": "\"/Users/nielsmadan/.local/share/mise/installs/node/24.16.0/bin/node\" \"<checkout>/.test-runs-codex-smoke-1788639333066/observe-hook.mjs\"",
+            "async": false,
+            "matcher": null,
+            "timeoutSec": 15,
+            "statusMessage": null,
+            "additionalContextLimit": 0,
+            "sourcePath": "<checkout>/.test-runs-codex-smoke-1788639333066/.codex/hooks.json",
+            "source": "project",
+            "pluginId": null,
+            "displayOrder": 11,
+            "enabled": true,
+            "isManaged": false,
+            "currentHash": "sha256:f275eea86dcd1323cb3fd1762302e7299c031ca3da7c1bfad38a51d699f0e6ab",
+            "trustStatus": "trusted"
+          }
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      "hookOutputs": [
+        {
+          "input": {
+            "session_id": "01a07336-4ce2-7e63-bc27-df810b0c4e74",
+            "transcript_path": null,
+            "cwd": "<checkout>/.test-runs-codex-smoke-1788639333066",
+            "hook_event_name": "SessionStart",
+            "model": "gpt-5.6-sol",
+            "permission_mode": "bypassPermissions",
+            "source": "startup"
+          },
+          "stdout": "{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"\"}}\n",
+          "status": 0
+        },
+        {
+          "input": {
+            "session_id": "01a07336-4ce2-7e63-bc27-df810b0c4e74",
+            "turn_id": "01a07336-4d47-7b40-a45b-32c1a971586f",
+            "transcript_path": null,
+            "cwd": "<checkout>/.test-runs-codex-smoke-1788639333066",
+            "hook_event_name": "UserPromptSubmit",
+            "model": "gpt-5.6-sol",
+            "permission_mode": "bypassPermissions",
+            "prompt": "[playbill:smoke] Implement TASK.md. Work only in this task directory. Use Node builtins. Preserve the original test files. Do not dispatch agents, install dependencies, or use git."
+          },
+          "stdout": "{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"Playbill M3 installation seam\\n\\nUse the following steps in order. Each step invokes its named skill through the harness skill registry.\\n\\n1. Implement and verify — invoke `playbill-smoke-implement`; consume `TASK.md`; produce `solution.mjs` and `receipt.md`.\\n\\ncodex skill invocation:\\n- \\\"playbill-smoke-implement\\\": read the registered SKILL.md at \\\"<checkout>/.test-runs-codex-smoke-1788639333066/.agents/skills/playbill-smoke-implement/SKILL.md\\\" (native name \\\"playbill-smoke-implement\\\")\\nSkill availability is a discovery snapshot; native permissions and live registration still apply.\\nAgent contracts require actual host capabilities; report any unavailable capability before that step.\"}}\n",
+          "status": 0
+        }
+      ]
+    },
+    {
+      "host": "pi",
+      "fixture": "<checkout>/.test-runs-pi-smoke-1788639334335",
+      "executable": "pi",
+      "args": [
+        "-p",
+        "--mode",
+        "json",
+        "--no-session",
+        "--no-extensions",
+        "-e",
+        "<checkout>/adapters/pi/playbill.ts",
+        "-e",
+        "<checkout>/.test-runs-pi-smoke-1788639334335/observe-context.ts",
+        "--no-skills",
+        "--skill",
+        "<checkout>/.test-runs-pi-smoke-1788639334335/.pi/skills/playbill-smoke-implement",
+        "--no-context-files",
+        "--no-prompt-templates",
+        "--no-themes",
+        "--approve",
+        "--model",
+        "openai-codex/gpt-5.6-sol",
+        "--thinking",
+        "low",
+        "[playbill:smoke] Implement TASK.md. Work only in this task directory. Use Node builtins. Preserve the original test files. Do not dispatch agents, install dependencies, or use git."
+      ],
+      "environment": {
+        "PLAYBILL_PROJECT_ROOT": "<checkout>/.test-runs-pi-smoke-1788639334335",
+        "PLAYBILL_MACHINE_DIR": "<checkout>/.test-runs-pi-smoke-1788639334335/machine",
+        "PLAYBILL_DEFAULTS_DIR": "<checkout>/.test-runs-pi-smoke-1788639334335/defaults",
+        "PLAYBILL_STATE_DIR": "<checkout>/.test-runs-pi-smoke-1788639334335/state",
+        "PLAYBILL_NODE": "/Users/nielsmadan/.local/share/mise/installs/node/24.16.0/bin/node"
+      },
+      "timeoutMs": 120000,
+      "maxOutputBytes": 2097152,
+      "maxStderrBytes": 262144,
+      "turnLimit": 12,
+      "budgetUSD": null,
+      "testSha256": "021b2c15cd9da3029c7cea37e3ee4ae3b6d4fd5494a1209ae6b47577f59f6e52",
+      "originalTest": "import assert from 'node:assert/strict';\nimport {test} from 'node:test';\nimport {sumEvenSquares} from './solution.mjs';\ntest('mixed input', () => assert.equal(sumEvenSquares([2, 3, -4, 2.5, '6', null, Infinity]), 20));\ntest('empty array', () => assert.equal(sumEvenSquares([]), 0));\ntest('invalid input', () => assert.throws(() => sumEvenSquares('bad'), TypeError));\ntest('preserves input', () => { const values = Object.freeze([2, 4]); assert.equal(sumEvenSquares(values), 20); });\n",
+      "adapterSha256": "72f583a764efe506daf4e9a3854ab65ddfb3158343d82f103933f3e5eefe47df",
+      "inventoryMode": "native before_agent_start Skill[]",
+      "harnessVersion": "0.84.1",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "durationMs": 28682,
+      "rawSha256": "d53c1c3d2c7814cadfbe563a437bc0bfb6f33e43a22f8b85b395fb3fed7bb2ef",
+      "usage": [
+        {
+          "input": 1539,
+          "output": 68,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 9,
+          "totalTokens": 1607,
+          "cost": {
+            "input": 0.0076950000000000005,
+            "output": 0.00204,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.009735
+          }
+        },
+        {
+          "input": 1691,
+          "output": 75,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 8,
+          "totalTokens": 1766,
+          "cost": {
+            "input": 0.008455,
+            "output": 0.0022500000000000003,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.010705000000000001
+          }
+        },
+        {
+          "input": 2344,
+          "output": 30,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 9,
+          "totalTokens": 2374,
+          "cost": {
+            "input": 0.011720000000000001,
+            "output": 0.0009,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.012620000000000001
+          }
+        },
+        {
+          "input": 2398,
+          "output": 136,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 16,
+          "totalTokens": 2534,
+          "cost": {
+            "input": 0.01199,
+            "output": 0.00408,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.01607
+          }
+        },
+        {
+          "input": 2553,
+          "output": 36,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 7,
+          "totalTokens": 2589,
+          "cost": {
+            "input": 0.012765,
+            "output": 0.00108,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.013845
+          }
+        },
+        {
+          "input": 2692,
+          "output": 79,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 22,
+          "totalTokens": 2771,
+          "cost": {
+            "input": 0.013460000000000001,
+            "output": 0.00237,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.01583
+          }
+        },
+        {
+          "input": 2789,
+          "output": 37,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 0,
+          "totalTokens": 2826,
+          "cost": {
+            "input": 0.013945,
+            "output": 0.00111,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.015055
+          }
+        }
+      ],
+      "costUSD": 0.09386,
+      "verification": {
+        "testIntact": true,
+        "testSha256": "021b2c15cd9da3029c7cea37e3ee4ae3b6d4fd5494a1209ae6b47577f59f6e52",
+        "testStatus": 0,
+        "nativeActivation": true,
+        "activation": {
+          "type": "tool_execution_end",
+          "toolCallId": "call_ULyNArUenezyMBSSJIr1pVrB|fc_00dd1e8c91556621016a9c786b468887d29fd6a0021c648691",
+          "toolName": "read",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "---\nname: playbill-smoke-implement\ndescription: Implements the isolated Playbill adapter smoke task when selected by its workflow.\n---\nImplement TASK.md in solution.mjs. Run node --test test.mjs and correct failures. Write receipt.md containing exactly `skill-receipt: pb-m3-native-seam` on its first line, then the test outcome.\n"
+              }
+            ]
+          },
+          "isError": false
+        },
+        "mappingMatched": true,
+        "receiptMatched": true
+      },
+      "outcome": "passed",
+      "independentChecks": "✔ mixed input (0.4165ms)\n✔ empty array (0.063375ms)\n✔ invalid input (0.180708ms)\n✔ preserves input (0.056958ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 46.544417\n",
+      "rawTraceSha256": "d53c1c3d2c7814cadfbe563a437bc0bfb6f33e43a22f8b85b395fb3fed7bb2ef",
+      "contexts": [
+        [
+          {
+            "role": "custom",
+            "customType": "playbill:workflow",
+            "content": "Playbill M3 installation seam\n\nUse the following steps in order. Each step invokes its named skill through the harness skill registry.\n\n1. Implement and verify — invoke `playbill-smoke-implement`; consume `TASK.md`; produce `solution.mjs` and `receipt.md`.\n\npi skill invocation:\n- \"playbill-smoke-implement\": read the registered SKILL.md at \"<checkout>/.test-runs-pi-smoke-1788639334335/.pi/skills/playbill-smoke-implement/SKILL.md\" (native name \"playbill-smoke-implement\")\nSkill availability is a discovery snapshot; native permissions and live registration still apply.\nPi has no standard fresh-subagent tool. If a step requires a capability unavailable in this session, report the missing capability and stop that step; preserve its declared contract.",
+            "display": false,
+            "timestamp": 0
+          }
+        ],
+        [
+          {
+            "role": "custom",
+            "customType": "playbill:workflow",
+            "content": "Playbill M3 installation seam\n\nUse the following steps in order. Each step invokes its named skill through the harness skill registry.\n\n1. Implement and verify — invoke `playbill-smoke-implement`; consume `TASK.md`; produce `solution.mjs` and `receipt.md`.\n\npi skill invocation:\n- \"playbill-smoke-implement\": read the registered SKILL.md at \"<checkout>/.test-runs-pi-smoke-1788639334335/.pi/skills/playbill-smoke-implement/SKILL.md\" (native name \"playbill-smoke-implement\")\nSkill availability is a discovery snapshot; native permissions and live registration still apply.\nPi has no standard fresh-subagent tool. If a step requires a capability unavailable in this session, report the missing capability and stop that step; preserve its declared contract.",
+            "display": false,
+            "timestamp": 0
+          }
+        ],
+        [
+          {
+            "role": "custom",
+            "customType": "playbill:workflow",
+            "content": "Playbill M3 installation seam\n\nUse the following steps in order. Each step invokes its named skill through the harness skill registry.\n\n1. Implement and verify — invoke `playbill-smoke-implement`; consume `TASK.md`; produce `solution.mjs` and `receipt.md`.\n\npi skill invocation:\n- \"playbill-smoke-implement\": read the registered SKILL.md at \"<checkout>/.test-runs-pi-smoke-1788639334335/.pi/skills/playbill-smoke-implement/SKILL.md\" (native name \"playbill-smoke-implement\")\nSkill availability is a discovery snapshot; native permissions and live registration still apply.\nPi has no standard fresh-subagent tool. If a step requires a capability unavailable in this session, report the missing capability and stop that step; preserve its declared contract.",
+            "display": false,
+            "timestamp": 0
+          }
+        ],
+        [
+          {
+            "role": "custom",
+            "customType": "playbill:workflow",
+            "content": "Playbill M3 installation seam\n\nUse the following steps in order. Each step invokes its named skill through the harness skill registry.\n\n1. Implement and verify — invoke `playbill-smoke-implement`; consume `TASK.md`; produce `solution.mjs` and `receipt.md`.\n\npi skill invocation:\n- \"playbill-smoke-implement\": read the registered SKILL.md at \"<checkout>/.test-runs-pi-smoke-1788639334335/.pi/skills/playbill-smoke-implement/SKILL.md\" (native name \"playbill-smoke-implement\")\nSkill availability is a discovery snapshot; native permissions and live registration still apply.\nPi has no standard fresh-subagent tool. If a step requires a capability unavailable in this session, report the missing capability and stop that step; preserve its declared contract.",
+            "display": false,
+            "timestamp": 0
+          }
+        ],
+        [
+          {
+            "role": "custom",
+            "customType": "playbill:workflow",
+            "content": "Playbill M3 installation seam\n\nUse the following steps in order. Each step invokes its named skill through the harness skill registry.\n\n1. Implement and verify — invoke `playbill-smoke-implement`; consume `TASK.md`; produce `solution.mjs` and `receipt.md`.\n\npi skill invocation:\n- \"playbill-smoke-implement\": read the registered SKILL.md at \"<checkout>/.test-runs-pi-smoke-1788639334335/.pi/skills/playbill-smoke-implement/SKILL.md\" (native name \"playbill-smoke-implement\")\nSkill availability is a discovery snapshot; native permissions and live registration still apply.\nPi has no standard fresh-subagent tool. If a step requires a capability unavailable in this session, report the missing capability and stop that step; preserve its declared contract.",
+            "display": false,
+            "timestamp": 0
+          }
+        ],
+        [
+          {
+            "role": "custom",
+            "customType": "playbill:workflow",
+            "content": "Playbill M3 installation seam\n\nUse the following steps in order. Each step invokes its named skill through the harness skill registry.\n\n1. Implement and verify — invoke `playbill-smoke-implement`; consume `TASK.md`; produce `solution.mjs` and `receipt.md`.\n\npi skill invocation:\n- \"playbill-smoke-implement\": read the registered SKILL.md at \"<checkout>/.test-runs-pi-smoke-1788639334335/.pi/skills/playbill-smoke-implement/SKILL.md\" (native name \"playbill-smoke-implement\")\nSkill availability is a discovery snapshot; native permissions and live registration still apply.\nPi has no standard fresh-subagent tool. If a step requires a capability unavailable in this session, report the missing capability and stop that step; preserve its declared contract.",
+            "display": false,
+            "timestamp": 0
+          }
+        ],
+        [
+          {
+            "role": "custom",
+            "customType": "playbill:workflow",
+            "content": "Playbill M3 installation seam\n\nUse the following steps in order. Each step invokes its named skill through the harness skill registry.\n\n1. Implement and verify — invoke `playbill-smoke-implement`; consume `TASK.md`; produce `solution.mjs` and `receipt.md`.\n\npi skill invocation:\n- \"playbill-smoke-implement\": read the registered SKILL.md at \"<checkout>/.test-runs-pi-smoke-1788639334335/.pi/skills/playbill-smoke-implement/SKILL.md\" (native name \"playbill-smoke-implement\")\nSkill availability is a discovery snapshot; native permissions and live registration still apply.\nPi has no standard fresh-subagent tool. If a step requires a capability unavailable in this session, report the missing capability and stop that step; preserve its declared contract.",
+            "display": false,
+            "timestamp": 0
+          }
+        ]
+      ]
+    }
+  ],
+  "opencode": {
+    "status": "blocked",
+    "version": "1.18.29",
+    "path": "/Users/nielsmadan/.opencode/opencode.json",
+    "evidence": "Earlier primary ls failed EPERM; nono why --self confirmed DENIED/path_not_granted. Not retried in M3.",
+    "paidRuns": 0,
+    "preparedFixture": ".test-runs-opencode-smoke-1788639302506",
+    "futureCommand": "npm run build && node scripts/smoke/hosts.mjs opencode"
+  }
+}

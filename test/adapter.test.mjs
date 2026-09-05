@@ -158,7 +158,7 @@ function writeContextFixture(f, length, restore = false) {
   write(path, JSON.stringify(document));
   const result = f.request();
   assert.equal(result.ok, true);
-  let remaining = length - claudeContext(result, restore).length;
+  let remaining = length - claudeContext(result, restore, f.cwd).length;
   assert.ok(remaining >= 0);
   for (const step of document.steps) {
     const extra = Math.min(remaining, 1999);
@@ -187,7 +187,7 @@ test('Claude delivers complete contexts up to 10,000 characters and diagnoses ov
     writeContextFixture(f, length);
     const result = f.request();
     assert.equal(result.ok, true);
-    const expected = claudeContext(result);
+    const expected = claudeContext(result, false, f.cwd);
     assert.equal(expected.length, length);
     assert.ok(Buffer.byteLength(expected) > 10_000);
     assert.equal(context(f.event()), expected);
@@ -206,7 +206,10 @@ test('Claude delivers complete contexts up to 10,000 characters and diagnoses ov
   writeContextFixture(f, 10_001);
   const result = f.request();
   assert.equal(result.ok, true);
-  assert.throws(() => claudeContext(result), /10,000 characters/u);
+  assert.throws(
+    () => claudeContext(result, false, f.cwd),
+    /10,000 characters/u,
+  );
   const output = f.event();
   assert.match(context(output), /LIMIT:.*10,000 characters/u);
   assert.equal(output.systemMessage, context(output));
@@ -245,7 +248,7 @@ test('warnings and restoration text share the complete Claude output bound', (t)
   }).systemMessage;
   assert.match(warning, /Superpowers may also supply workflow instructions/u);
   writeContextFixture(f, 10_000 - warning.length - 2, true);
-  const expected = `${claudeContext(f.request(), true)}\n\n${warning}`;
+  const expected = `${claudeContext(f.request(), true, f.cwd)}\n\n${warning}`;
   const output = f.event({
     hook_event_name: 'SessionStart',
     source: 'compact',

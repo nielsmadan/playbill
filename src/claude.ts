@@ -27,7 +27,11 @@ function boundedOutput(output: string): string {
   return output;
 }
 
-export function claudeContext(result: RuntimeResult, restore = false): string {
+export function claudeContext(
+  result: RuntimeResult,
+  restore = false,
+  root?: string,
+): string {
   if (!result.ok)
     return `Playbill configuration error:\n${result.diagnostics.map(formatDiagnostic).join('\n').slice(0, 8192)}\nNo workflow instructions were composed for this event.`;
   if (!result.commonProse) return '';
@@ -37,7 +41,7 @@ export function claudeContext(result: RuntimeResult, restore = false): string {
         `- ${JSON.stringify(id)}: Skill tool with skill=${JSON.stringify(invocation)}`,
     )
     .join('\n');
-  const appendix = `Claude skill invocation:\n${mapping}\nSkill availability is a discovery snapshot; Claude permissions and live registration still apply.`;
+  const appendix = `Claude skill invocation:\n${mapping}${root ? `\nResolve workflow artifact paths relative to project root ${JSON.stringify(root)}.` : ''}\nSkill availability is a discovery snapshot; Claude permissions and live registration still apply.`;
   const context = `${result.commonProse}\n${appendix}${restore ? '\nWorkflow reference restored. Continue from the conversation summary and existing artifacts.' : ''}`;
   return boundedOutput(context);
 }
@@ -99,7 +103,7 @@ export function handleClaudeEvent(
     if (inventory.superpowersEvidence && !warned) {
       warning = `Playbill: Superpowers may also supply workflow instructions (${inventory.superpowersEvidence}). Both can coexist; check their workflow choices if they overlap.`;
     }
-    const context = claudeContext(result, restore);
+    const context = claudeContext(result, restore, root);
     const additionalContext = boundedOutput(
       [context, warning].filter(Boolean).join('\n\n'),
     );

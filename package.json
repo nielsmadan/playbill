@@ -14,11 +14,25 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./pi": {
+      "types": "./dist/pi.d.ts",
+      "import": "./dist/pi.js"
+    },
+    "./opencode": {
+      "types": "./dist/opencode.d.ts",
+      "import": "./dist/opencode.js"
     }
   },
   "files": [
     "dist",
-    "docs/formats.md"
+    "docs/formats.md",
+    "adapters",
+    ".claude-plugin",
+    ".codex-plugin",
+    "skills",
+    "defaults",
+    "docs/adapters"
   ],
   "scripts": {
     "format": "prettier --write .",
@@ -35,11 +49,33 @@
     "yaml": "2.9.0"
   },
   "devDependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.1",
     "@eslint/js": "10.0.1",
+    "@opencode-ai/plugin": "1.18.29",
     "@types/node": "24.13.3",
     "eslint": "10.10.0",
     "prettier": "3.9.6",
     "typescript": "6.0.3",
     "typescript-eslint": "8.69.0"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@opencode-ai/plugin": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "@opencode-ai/plugin": {
+      "optional": true
+    }
+  },
+  "pi": {
+    "extensions": [
+      "./adapters/pi/playbill.ts"
+    ],
+    "skills": [
+      "./skills"
+    ]
   }
 }
