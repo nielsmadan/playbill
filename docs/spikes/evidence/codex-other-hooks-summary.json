@@ -1,0 +1,98 @@
+[
+  {
+    "eventName": "preToolUse",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "permissionRequest",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "postToolUse",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "preCompact",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "postCompact",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "sessionStart",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "sessionEnd",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "sessionEnd",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "unclassified"
+  },
+  {
+    "eventName": "userPromptSubmit",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "stop",
+    "source": "user",
+    "pluginId": null,
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "juggler"
+  },
+  {
+    "eventName": "sessionStart",
+    "source": "plugin",
+    "pluginId": "mouthfeel@mouthfeel",
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "mouthfeel"
+  },
+  {
+    "eventName": "userPromptSubmit",
+    "source": "plugin",
+    "pluginId": "mouthfeel@mouthfeel",
+    "enabled": true,
+    "trustStatus": "trusted",
+    "commandFamily": "mouthfeel"
+  }
+]

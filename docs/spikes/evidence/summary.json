@@ -1,0 +1,42 @@
+{
+  "totals": [
+    {
+      "harness": "claude",
+      "recorded": 5,
+      "namedSkillRuns": 5,
+      "sequencePasses": 4,
+      "denominator": 5,
+      "behaviorPasses": 5,
+      "blocked": 0
+    },
+    {
+      "harness": "codex",
+      "recorded": 5,
+      "namedSkillRuns": 5,
+      "sequencePasses": 3,
+      "denominator": 5,
+      "behaviorPasses": 5,
+      "blocked": 0
+    },
+    {
+      "harness": "pi",
+      "recorded": 5,
+      "namedSkillRuns": 5,
+      "sequencePasses": 5,
+      "denominator": 5,
+      "behaviorPasses": 5,
+      "blocked": 0
+    },
+    {
+      "harness": "opencode",
+      "recorded": 5,
+      "namedSkillRuns": 0,
+      "sequencePasses": 0,
+      "denominator": 5,
+      "behaviorPasses": 0,
+      "blocked": 5
+    }
+  ],
+  "gate": true,
+  "namedHarnesses": 3
+}

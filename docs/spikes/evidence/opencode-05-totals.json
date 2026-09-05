@@ -1,0 +1,20 @@
+{
+  "runId": "opencode-05-totals",
+  "harness": "opencode",
+  "taskId": "05-totals",
+  "status": "blocked",
+  "allSkills": false,
+  "sequence": false,
+  "reasons": [
+    "OpenCode startup failed in the single plumbing probe: FileSystem.readFile ~/.opencode/opencode.json; nono confirmed DENIED / path_not_granted. Scored slot not launched because the identical prerequisite remains blocked."
+  ],
+  "metadata": {
+    "runId": "opencode-05-totals",
+    "harness": "opencode",
+    "taskId": "05-totals",
+    "scored": true,
+    "blocked": "OpenCode startup failed in the single plumbing probe: FileSystem.readFile ~/.opencode/opencode.json; nono confirmed DENIED / path_not_granted. Scored slot not launched because the identical prerequisite remains blocked.",
+    "probe": "opencode-probe",
+    "modelStarted": false
+  }
+}

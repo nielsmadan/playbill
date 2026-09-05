@@ -1,0 +1,29 @@
+[
+  {
+    "cwd": "<repo>/.spike-runs/codex-probe",
+    "fixtureHooks": [
+      {
+        "key": "<repo>/.spike-runs/codex-probe/.codex/hooks.json:session_start:0:0",
+        "eventName": "sessionStart",
+        "handlerType": "command",
+        "command": "node '<repo>/docs/spikes/fixtures/session-start.mjs' codex",
+        "async": false,
+        "matcher": null,
+        "timeoutSec": 5,
+        "statusMessage": null,
+        "additionalContextLimit": null,
+        "sourcePath": "<repo>/.spike-runs/codex-probe/.codex/hooks.json",
+        "source": "project",
+        "pluginId": null,
+        "displayOrder": 10,
+        "enabled": true,
+        "isManaged": false,
+        "currentHash": "sha256:17525eb0e5d148d8dd2de6c0c3bfc37894d7935f5ea7403c5146d3503a1ad898",
+        "trustStatus": "trusted"
+      }
+    ],
+    "otherHookCount": 12,
+    "warnings": [],
+    "errors": []
+  }
+]

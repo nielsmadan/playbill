@@ -1,0 +1,22 @@
+OpenCode 1.18.29 plumbing probe, 2026-09-05
+
+node docs/spikes/run.mjs opencode 01-clamp --probe
+Harness exit code: 1
+Elapsed: 1052 ms
+stdout: empty
+stderr (ANSI removed):
+Error: Unexpected error
+
+Unknown: FileSystem.readFile (/Users/nielsmadan/.opencode/opencode.json)
+
+ls -ld /Users/nielsmadan/.opencode /Users/nielsmadan/.opencode/opencode.json
+ls: /Users/nielsmadan/.opencode/opencode.json: Operation not permitted
+drwxr-xr-x  9 nielsmadan  staff  288 Jun 10 12:08 /Users/nielsmadan/.opencode
+
+nono why --self --path /Users/nielsmadan/.opencode/opencode.json --op read
+DENIED
+  Reason: path_not_granted
+  Details: Path is not covered by any capability: /Users/nielsmadan/.opencode/opencode.json
+  Suggested fix: --read /Users/nielsmadan/.opencode
+
+The suggested grant was not applied. The five scored slots remain blocked and unpassed.

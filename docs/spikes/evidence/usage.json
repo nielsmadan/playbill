@@ -1,0 +1,98 @@
+{
+  "totals": [
+    {
+      "harness": "claude",
+      "scoredRuns": 5,
+      "uncachedInput": 164,
+      "cachedInput": 3268461,
+      "cacheWrite": 118650,
+      "output": 14974,
+      "durationMs": 218801,
+      "reportedCostUSD": 1.2783602
+    },
+    {
+      "harness": "codex",
+      "scoredRuns": 5,
+      "uncachedInput": 90986,
+      "cachedInput": 900608,
+      "cacheWrite": 0,
+      "output": 6677,
+      "durationMs": 324021,
+      "reportedCostUSD": null
+    },
+    {
+      "harness": "pi",
+      "scoredRuns": 5,
+      "uncachedInput": 65405,
+      "cachedInput": 184576,
+      "cacheWrite": 0,
+      "output": 5824,
+      "durationMs": 269975,
+      "reportedCostUSD": 0.594033
+    }
+  ],
+  "probes": [
+    {
+      "harness": "claude",
+      "scored": false,
+      "durationMs": 42993,
+      "exitCode": 0,
+      "usage": {
+        "input_tokens": 32,
+        "cache_creation_input_tokens": 22088,
+        "cache_read_input_tokens": 623267,
+        "output_tokens": 2053,
+        "output_tokens_details": {
+          "thinking_tokens": 42
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 22088,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 64,
+            "cache_read_input_tokens": 41978,
+            "cache_creation_input_tokens": 350,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 350
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "reportedCostUSD": 0.23359940000000004
+    },
+    {
+      "harness": "codex",
+      "scored": false,
+      "durationMs": 35886,
+      "exitCode": 0,
+      "usage": {
+        "input_tokens": 155935,
+        "cached_input_tokens": 139776,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 554,
+        "reasoning_output_tokens": 8
+      },
+      "reportedCostUSD": null
+    },
+    {
+      "harness": "opencode",
+      "scored": false,
+      "durationMs": 1052,
+      "exitCode": 1,
+      "usage": null,
+      "reportedCostUSD": null
+    }
+  ]
+}
