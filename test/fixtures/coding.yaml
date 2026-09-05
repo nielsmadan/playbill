@@ -1,0 +1,40 @@
+version: 1
+id: coding
+title: Playbill M0 coding workflow
+introduction: For this coding task, use the following steps in order. Each step invokes its named skill through the harness skill registry.
+artifacts:
+  - { id: task, path: TASK.md }
+  - { id: code, path: solution.mjs }
+  - { id: implementation, path: implementation.md }
+  - { id: task_review, path: reviews/task.md }
+  - { id: fixes, path: fixes.md }
+  - { id: final_review, path: reviews/final.md }
+inputs: [task, code]
+outputs: [code, implementation, task_review, fixes, final_review]
+steps:
+  - type: step
+    id: implement
+    title: Implement
+    skill: '{{implement}}'
+    consumes: [task, code]
+    produces: [code, implementation]
+  - type: step
+    id: review
+    title: Task review
+    skill: '{{task_review}}'
+    consumes: [task, code, implementation]
+    produces: [task_review]
+  - type: step
+    id: fix
+    title: Fix
+    skill: '{{fix}}'
+    consumes: [task_review, code]
+    produces: [code, fixes]
+    instruction: record no changes when the review is clean
+  - type: step
+    id: final
+    title: Final review
+    skill: '{{final_review}}'
+    consumes: [task, code, implementation, task_review, fixes]
+    produces: [final_review]
+    instruction: run the executable checks

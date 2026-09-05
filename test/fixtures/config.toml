@@ -1,0 +1,16 @@
+version = 1
+
+[slots]
+implement = "pb-implement"
+task_review = "pb-task-review"
+fix = "pb-fix"
+final_review = "pb-final-review"
+
+[workflows.coding]
+entry = "auto"
+priority = 10
+
+[workflows.coding.triggers]
+keywords = ["implement", "fix"]
+file_patterns = ["src/**"]
+repo_conditions = ["git"]

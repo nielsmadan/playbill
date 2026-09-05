@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.spike-runs/
+.test-runs-*/
+docs/spikes/
+docs/plans/
+test/fixtures/*.golden.md
+package-lock.json

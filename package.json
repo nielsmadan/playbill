@@ -1,0 +1,45 @@
+{
+  "name": "@playbill/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Configurable skill pipelines rendered for coding agents",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "bin": {
+    "playbill": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "docs/formats.md"
+  ],
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "check-all": "npm run format:check && npm run lint && npm run type-check",
+    "build": "tsc",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "playbill": "node dist/cli.js"
+  },
+  "dependencies": {
+    "smol-toml": "1.8.0",
+    "yaml": "2.9.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.13.3",
+    "eslint": "10.10.0",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.69.0"
+  }
+}

@@ -1,1 +1,5 @@
 .spike-runs/
+node_modules/
+dist/
+coverage/
+.test-runs-*/
