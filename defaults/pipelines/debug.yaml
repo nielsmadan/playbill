@@ -1,0 +1,61 @@
+version: 1
+id: debug
+title: Debug a reproducible failure
+introduction: Follow these steps using the current context. Entry grants no permission for Git mutation, global settings, publication, or external messages; honor the actual request and repository instructions.
+artifacts:
+  - { id: brief, path: .playbill/debug/brief.md }
+  - { id: diagnosis, path: .playbill/debug/diagnosis.md }
+  - { id: work, path: .playbill/debug/work.md }
+  - { id: checks, path: .playbill/debug/checks.md }
+  - { id: progress, path: .playbill/debug/progress.md }
+  - { id: report, path: .playbill/debug/report.md }
+outputs: [brief, progress, report]
+steps:
+  - type: step
+    id: capture
+    title: Capture the bug
+    skill: '{{brief}}'
+    produces: [brief, progress]
+    instruction: Capture the user's current request and existing authorization; initialize cumulative progress before investigation, preserving prior evidence on continuation.
+  - type: step
+    id: reproduce
+    title: Reproduce and isolate
+    skill: '{{investigate}}'
+    consumes: [brief, progress]
+    produces: [diagnosis, checks, progress]
+    instruction: Read relevant documentation and code; run the original reproduction, preserve original checks, and record the baseline and hypothesis in progress before scratch files are reused.
+  - type: while
+    condition: the original failure remains, a correction is supported by evidence, and code changes are authorized
+    max_iterations: 3
+    steps:
+      - type: step
+        id: correct
+        title: Apply one correction
+        skill: '{{implement}}'
+        consumes: [brief, diagnosis, progress]
+        produces: [work]
+        instruction: Apply one evidenced correction; undo only this workflow's ineffective experimental change before trying another.
+      - type: step
+        id: recheck
+        title: Check and preserve this attempt
+        skill: '{{verify}}'
+        consumes: [brief, work, progress]
+        produces: [checks, progress]
+        instruction: Rerun original checks and relevant project checks; append this attempt's change, diagnosis, full outcomes, and remaining failure to progress before overwriting scratch evidence.
+      - type: if
+        condition: the original failure remains after this attempt
+        then:
+          - type: step
+            id: reassess
+            title: Reassess failed hypotheses
+            skill: '{{diagnose}}'
+            consumes: [brief, diagnosis, checks, progress]
+            produces: [diagnosis, progress]
+            instruction: Record why the attempt failed and the next supported hypothesis; append evidence to progress before replacing diagnosis.
+  - type: step
+    id: handoff
+    title: Report the outcome
+    skill: '{{report}}'
+    consumes: [brief, diagnosis, checks, progress]
+    produces: [report]
+    instruction: Report verified behavior, retained instrumentation, and unresolved work; after the attempt cap, stop with remaining failures or missing evidence explicitly recorded.

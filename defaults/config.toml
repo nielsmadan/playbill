@@ -1,0 +1,38 @@
+version = 1
+
+[slots]
+brief = "playbill:playbill-brief"
+read_docs = "playbill:playbill-read-docs"
+decisions = "playbill:playbill-blind-spots"
+plan = "playbill:playbill-plan"
+implement = "playbill:playbill-implement"
+task_review = "playbill:playbill-code-review"
+final_review = "playbill:playbill-code-review"
+investigate = "playbill:playbill-debug-log"
+diagnose = "playbill:playbill-hard-fix"
+verify = "playbill:playbill-verify"
+report = "playbill:playbill-report"
+
+[workflows.longshot]
+entry = "auto"
+priority = 40
+[workflows.longshot.triggers]
+keywords = ["longshot", "work on this independently"]
+
+[workflows.plan]
+entry = "auto"
+priority = 20
+[workflows.plan.triggers]
+keywords = ["plan", "implementation plan"]
+
+[workflows.review]
+entry = "auto"
+priority = 30
+[workflows.review.triggers]
+keywords = ["review", "code review"]
+
+[workflows.debug]
+entry = "auto"
+priority = 10
+[workflows.debug.triggers]
+keywords = ["debug", "fix", "investigate bug"]

@@ -1,0 +1,22 @@
+version: 1
+skills:
+  - id: playbill:playbill-blind-spots
+    path: ../skills/playbill-blind-spots/SKILL.md
+  - id: playbill:playbill-brief
+    path: ../skills/playbill-brief/SKILL.md
+  - id: playbill:playbill-code-review
+    path: ../skills/playbill-code-review/SKILL.md
+  - id: playbill:playbill-debug-log
+    path: ../skills/playbill-debug-log/SKILL.md
+  - id: playbill:playbill-hard-fix
+    path: ../skills/playbill-hard-fix/SKILL.md
+  - id: playbill:playbill-implement
+    path: ../skills/playbill-implement/SKILL.md
+  - id: playbill:playbill-plan
+    path: ../skills/playbill-plan/SKILL.md
+  - id: playbill:playbill-read-docs
+    path: ../skills/playbill-read-docs/SKILL.md
+  - id: playbill:playbill-report
+    path: ../skills/playbill-report/SKILL.md
+  - id: playbill:playbill-verify
+    path: ../skills/playbill-verify/SKILL.md

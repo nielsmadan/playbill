@@ -1,0 +1,198 @@
+{
+  "date": "2026-09-05",
+  "experiment": "E10",
+  "fixture": ".test-runs-suite-smoke-1788644672122-0OHhef",
+  "previousFailedTrial": ".test-runs-suite-smoke-1788642160836",
+  "conclusion": "Workflow adherence FAILED. R19 arguments were correctly passed and expanded; only the brief skill activated, no workflow artifacts were created, and no original failing reproduction was run by the model. The task correction independently passes all five original tests. The M4 live acceptance criterion remains unmet.",
+  "host": {
+    "name": "Claude Code",
+    "version": "2.1.261",
+    "model": "claude-sonnet-5",
+    "plugins": [
+      {
+        "name": "playbill",
+        "source": "playbill@inline",
+        "version": "0.1.0"
+      }
+    ],
+    "skills": [
+      "playbill:playbill-blind-spots",
+      "playbill:playbill-brief",
+      "playbill:playbill-code-review",
+      "playbill:playbill-debug-log",
+      "playbill:playbill-hard-fix",
+      "playbill:playbill-implement",
+      "playbill:playbill-plan",
+      "playbill:playbill-read-docs",
+      "playbill:playbill-report",
+      "playbill:playbill-verify"
+    ]
+  },
+  "limits": {
+    "timeoutMs": 120000,
+    "maxTurns": 24,
+    "maxBudgetUsd": 2,
+    "maxOutputBytes": 2097152
+  },
+  "outcome": {
+    "exit": {
+      "code": 0,
+      "signal": null
+    },
+    "durationMs": 21025,
+    "turns": 6,
+    "costUsd": 0.14109980000000003,
+    "capReached": null,
+    "adherencePassed": false
+  },
+  "adapter": {
+    "contextCharacters": 4033,
+    "context": "Debug a reproducible failure\n\nFollow these steps using the current context. Entry grants no permission for Git mutation, global settings, publication, or external messages; honor the actual request and repository instructions.\n\n1. Capture the bug — invoke `playbill:playbill-brief`; produce `.playbill/debug/brief.md` and `.playbill/debug/progress.md`; Capture the user's current request and existing authorization; initialize cumulative progress before investigation, preserving prior evidence on continuation.\n2. Reproduce and isolate — invoke `playbill:playbill-debug-log`; consume `.playbill/debug/brief.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; Read relevant documentation and code; run the original reproduction, preserve original checks, and record the baseline and hypothesis in progress before scratch files are reused.\n3. While the original failure remains, a correction is supported by evidence, and code changes are authorized, repeat at most 3 times (check before each iteration; continue afterward):\n  3.1. Apply one correction — invoke `playbill:playbill-implement`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/work.md`; Apply one evidenced correction; undo only this workflow's ineffective experimental change before trying another.\n  3.2. Check and preserve this attempt — invoke `playbill:playbill-verify`; consume `.playbill/debug/brief.md`, `.playbill/debug/work.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; Rerun original checks and relevant project checks; append this attempt's change, diagnosis, full outcomes, and remaining failure to progress before overwriting scratch evidence.\n  3.3. If the original failure remains after this attempt:\n    3.3.1. Reassess failed hypotheses — invoke `playbill:playbill-hard-fix`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/diagnosis.md` and `.playbill/debug/progress.md`; Record why the attempt failed and the next supported hypothesis; append evidence to progress before replacing diagnosis.\n4. Report the outcome — invoke `playbill:playbill-report`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/report.md`; Report verified behavior, retained instrumentation, and unresolved work; after the attempt cap, stop with remaining failures or missing evidence explicitly recorded.\n\nClaude skill invocation:\n- \"playbill:playbill-blind-spots\": Skill tool with skill=\"playbill:playbill-blind-spots\"\n- \"playbill:playbill-brief\": Skill tool with skill=\"playbill:playbill-brief\"\n- \"playbill:playbill-code-review\": Skill tool with skill=\"playbill:playbill-code-review\"\n- \"playbill:playbill-debug-log\": Skill tool with skill=\"playbill:playbill-debug-log\"\n- \"playbill:playbill-hard-fix\": Skill tool with skill=\"playbill:playbill-hard-fix\"\n- \"playbill:playbill-implement\": Skill tool with skill=\"playbill:playbill-implement\"\n- \"playbill:playbill-plan\": Skill tool with skill=\"playbill:playbill-plan\"\n- \"playbill:playbill-read-docs\": Skill tool with skill=\"playbill:playbill-read-docs\"\n- \"playbill:playbill-report\": Skill tool with skill=\"playbill:playbill-report\"\n- \"playbill:playbill-verify\": Skill tool with skill=\"playbill:playbill-verify\"\nFor each invocation, set Skill args to the current step's title and instruction, task string (current collection item or user request), input/output artifact paths, and declared agent scope. Apply the technique to that step context.\nResolve workflow artifact paths relative to project root \"/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788644672122-0OHhef\".\nSkill availability is a discovery snapshot; Claude permissions and live registration still apply.",
+    "hookExitCode": 0
+  },
+  "observationProtocol": {
+    "version": 1,
+    "observer": ".suite-observer.mjs",
+    "observerSha256": "e3a3169367e432fd61fc525c5feaf284f20b647c76cf204afe132f8c3c516691",
+    "command": "node --test test.mjs"
+  },
+  "primaryAudit": {
+    "nativeReceiptsVerified": 8,
+    "toolPairsVerified": 4,
+    "originalTestsIntactAtEveryBoundary": true,
+    "allSixArtifactsAbsentAtEveryBoundary": true,
+    "finalSourceMatchesLastObservation": true,
+    "originalTestSha256": "18c1fdcef0536d468e55f8e15077f6a77e3fe23b28eaa0f41f83cf23805cfa93",
+    "baseline": {
+      "exitCode": 1,
+      "stdout": "✖ counts repeated integers once (0.845875ms)\n✔ ignores values that are not safe integers (0.099792ms)\n✔ empty input (0.057834ms)\n✔ invalid input (0.208083ms)\n✔ preserves frozen input (0.062542ms)\nℹ tests 5\nℹ suites 0\nℹ pass 4\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 51.603791\n\n✖ failing tests:\n\ntest at test.mjs:4:1\n✖ counts repeated integers once (0.845875ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  2 !== 3\n  \n      at TestContext.<anonymous> (file:///Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788644672122-0OHhef/test.mjs:4:52)\n      at Test.runInAsyncScope (node:async_hooks:227:14)\n      at Test.run (node:internal/test_runner/test:1306:25)\n      at Test.start (node:internal/test_runner/test:1177:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 2,\n    expected: 3,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n",
+      "stderr": ""
+    },
+    "independentChecks": {
+      "exitCode": 0,
+      "stdout": "✔ counts repeated integers once (0.448584ms)\n✔ ignores values that are not safe integers (0.069542ms)\n✔ empty input (0.058833ms)\n✔ invalid input (0.209667ms)\n✔ preserves frozen input (0.065417ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 51.28975\n",
+      "stderr": ""
+    },
+    "primaryRerun": {
+      "command": "node --test test.mjs",
+      "exitCode": 0,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "toolSequence": [
+    {
+      "id": "toolu_01HGGGEMcvsjW19FNXr5zEai",
+      "name": "Skill",
+      "input": {
+        "skill": "playbill:playbill-brief",
+        "args": "Capture the current request: Fix sumUniqueIntegers in solution.mjs so it sums distinct safe integers from an array, ignoring non-integer/unsafe values, returns 0 for empty array, throws TypeError for non-array input, and preserves the input array (no mutation). Bug: duplicates currently inflate the sum. Verification: run `node --test test.mjs` as a standalone Bash command. Constraints: work only inside this task directory; do not modify test.mjs, original-test.mjs, .suite-observer.mjs, .suite-settings.json, .suite-observations/, command.json, baseline.json; no Git, no dependency installs, no agents, no external/global changes. Output: .playbill/debug/brief.md and .playbill/debug/progress.md"
+      },
+      "response": "Launching skill: playbill:playbill-brief",
+      "originalSourceSha256": "8a9c22d031874b4ab448835e27e7d55fb97b89062567ab61032f31bbec771313",
+      "resultingSourceSha256": "8a9c22d031874b4ab448835e27e7d55fb97b89062567ab61032f31bbec771313"
+    },
+    {
+      "id": "toolu_019KQfnPLWc6MeQUFxYLxNCL",
+      "name": "Bash",
+      "input": {
+        "command": "ls -la; echo ---; cat solution.mjs 2>/dev/null; echo ---; cat test.mjs 2>/dev/null"
+      },
+      "response": "total 56\ndrwx------@ 12 nielsmadan  staff   384 Sep  5 23:44 .\ndrwxr-xr-x  33 nielsmadan  staff  1056 Sep  5 23:44 ..\ndrwxr-xr-x@  3 nielsmadan  staff    96 Sep  5 23:44 .playbill\ndrwxr-xr-x@  5 nielsmadan  staff   160 Sep  5 23:44 .suite-observations\n-rw-r--r--@  1 nielsmadan  staff  2575 Sep  5 23:44 .suite-observer.mjs\n-rw-r--r--@  1 nielsmadan  staff  1336 Sep  5 23:44 .suite-settings.json\n-rw-r--r--@  1 nielsmadan  staff  1116 Sep  5 23:44 baseline.json\n-rw-r--r--@  1 nielsmadan  staff  2345 Sep  5 23:44 command.json\n-rw-r--r--@  1 nielsmadan  staff   681 Sep  5 23:44 original-test.mjs\n-rw-r--r--@  1 nielsmadan  staff   203 Sep  5 23:44 solution.mjs\ndrwx------@  3 nielsmadan  staff    96 Sep  5 23:44 state\n-rw-r--r--@  1 nielsmadan  staff   681 Sep  5 23:44 test.mjs\n---\nexport function sumUniqueIntegers(values) {\n  if (!Array.isArray(values)) throw new TypeError(\"Expected an array\");\n  return values.filter(Number.isSafeInteger).reduce((sum, value) => sum + value, 0);\n}\n---\nimport assert from 'node:assert/strict';\nimport {test} from 'node:test';\nimport {sumUniqueIntegers} from './solution.mjs';\ntest('counts repeated integers once', () => assert.equal(sumUniqueIntegers([2, 2, 4, -3, -3]), 3));\ntest('ignores values that are not safe integers', () => assert.equal(sumUniqueIntegers([2, 3.5, '4', null, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]), 2));\ntest('empty input', () => assert.equal(sumUniqueIntegers([]), 0));\ntest('invalid input', () => { for (const value of [null, '2', {}, 4]) assert.throws(() => sumUniqueIntegers(value), TypeError); });\ntest('preserves frozen input', () => assert.equal(sumUniqueIntegers(Object.freeze([3, 5, -2])), 6));",
+      "originalSourceSha256": "8a9c22d031874b4ab448835e27e7d55fb97b89062567ab61032f31bbec771313",
+      "resultingSourceSha256": "8a9c22d031874b4ab448835e27e7d55fb97b89062567ab61032f31bbec771313"
+    },
+    {
+      "id": "toolu_015WQwSrxBeLvJdPHw5zvUXK",
+      "name": "Edit",
+      "input": {
+        "replace_all": false,
+        "file_path": "/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788644672122-0OHhef/solution.mjs",
+        "old_string": "  return values.filter(Number.isSafeInteger).reduce((sum, value) => sum + value, 0);",
+        "new_string": "  const unique = new Set(values.filter(Number.isSafeInteger));\n  return [...unique].reduce((sum, value) => sum + value, 0);"
+      },
+      "response": "The file /Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788644672122-0OHhef/solution.mjs has been updated successfully. (file state is current in your context — no need to Read it back)",
+      "originalSourceSha256": "8a9c22d031874b4ab448835e27e7d55fb97b89062567ab61032f31bbec771313",
+      "resultingSourceSha256": "ed8b94f57054ef03466f54b75bab5806975f18ac1d1cfa23c74a0f1de135ae48"
+    },
+    {
+      "id": "toolu_01MxwUoeJmQieqm7PR7ZCYMV",
+      "name": "Bash",
+      "input": {
+        "command": "node --test test.mjs"
+      },
+      "response": "✔ counts repeated integers once (0.468041ms)\n✔ ignores values that are not safe integers (0.081792ms)\n✔ empty input (0.058709ms)\n✔ invalid input (0.212333ms)\n✔ preserves frozen input (0.065959ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 51.456917",
+      "originalSourceSha256": "ed8b94f57054ef03466f54b75bab5806975f18ac1d1cfa23c74a0f1de135ae48",
+      "resultingSourceSha256": "ed8b94f57054ef03466f54b75bab5806975f18ac1d1cfa23c74a0f1de135ae48"
+    }
+  ],
+  "rawEvidence": {
+    "command.json": {
+      "sha256": "89fbbfaf3736363f4d070769ca690246a5c254494cf8f13ae3794fd1c5c32803"
+    },
+    "baseline.json": {
+      "sha256": "6d12185f3e66c41b5ec664bf921ef95b12e1e7ce2b03d879614b49b951b12c95"
+    },
+    "stdout.jsonl": {
+      "sha256": "97c53ad76a1d5f00327711511334e5e56044be21bab81a1998525a6adf782e76"
+    },
+    "stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "verification.json": {
+      "sha256": "c4fffdb1abbb249b7d7530942f034e537a427b062cebcf7cf6b57f18f41eae0a"
+    },
+    "summary.json": {
+      "sha256": "51483dd5c8a44630d202163ecea3451cde4f3c266b6882d3675bf0a1e0c7f6d2"
+    },
+    ".suite-settings.json": {
+      "sha256": "4ebc8121eec798eae1b4faf9c4ef80b514b3515ae3f046a61e70900d6f16da12"
+    },
+    ".suite-observer.mjs": {
+      "sha256": "e3a3169367e432fd61fc525c5feaf284f20b647c76cf204afe132f8c3c516691"
+    }
+  },
+  "usage": {
+    "input_tokens": 10,
+    "cache_creation_input_tokens": 23370,
+    "cache_read_input_tokens": 188749,
+    "output_tokens": 985,
+    "output_tokens_details": {
+      "thinking_tokens": 110
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 23370,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 91,
+        "cache_read_input_tokens": 43294,
+        "cache_creation_input_tokens": 316,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 316
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "limitations": [
+    "Two distinct default-debug trials failed; neither is replaced or excluded.",
+    "The trial measures one simple task on one Claude model and does not establish behavior for other workflows or hosts.",
+    "Correct native argument delivery did not resolve adherence in this trial; this does not establish the cause of the model skipping steps.",
+    "No further paid trial is authorized automatically."
+  ]
+}

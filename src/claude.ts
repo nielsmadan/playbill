@@ -41,7 +41,7 @@ export function claudeContext(
         `- ${JSON.stringify(id)}: Skill tool with skill=${JSON.stringify(invocation)}`,
     )
     .join('\n');
-  const appendix = `Claude skill invocation:\n${mapping}${root ? `\nResolve workflow artifact paths relative to project root ${JSON.stringify(root)}.` : ''}\nSkill availability is a discovery snapshot; Claude permissions and live registration still apply.`;
+  const appendix = `Claude skill invocation:\n${mapping}\nFor each invocation, set Skill args to the current step's title and instruction, task string (current collection item or user request), input/output artifact paths, and declared agent scope. Apply the technique to that step context.${root ? `\nResolve workflow artifact paths relative to project root ${JSON.stringify(root)}.` : ''}\nSkill availability is a discovery snapshot; Claude permissions and live registration still apply.`;
   const context = `${result.commonProse}\n${appendix}${restore ? '\nWorkflow reference restored. Continue from the conversation summary and existing artifacts.' : ''}`;
   return boundedOutput(context);
 }

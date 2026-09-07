@@ -1,0 +1,340 @@
+{
+  "milestone": "M4",
+  "date": "2026-09-05",
+  "host": "Claude Code",
+  "outcome": "FAILED_WORKFLOW_ADHERENCE",
+  "taskBehavior": "Original duplicate regression failed before the trial; all five unchanged original checks passed independently afterward.",
+  "workflowBehavior": "The default debug pipeline was selected automatically and fully delivered. Claude activated the brief skill, then directly edited the function and ran tests. It skipped the remaining four required skill activations and all six declared workflow artifacts.",
+  "fixture": ".test-runs-suite-smoke-1788642160836",
+  "trialCount": 1,
+  "retried": false,
+  "command": {
+    "executable": "claude",
+    "args": [
+      "-p",
+      "--plugin-dir",
+      "/Users/nielsmadan/wrksp/playbill/dev1/",
+      "--setting-sources",
+      "project,local",
+      "--strict-mcp-config",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-hook-events",
+      "--no-session-persistence",
+      "--permission-mode",
+      "dontAsk",
+      "--allowedTools",
+      "Read,Write,Edit,Bash,Skill,Glob,Grep",
+      "--effort",
+      "low",
+      "--max-turns",
+      "24",
+      "--max-budget-usd",
+      "2",
+      "Fix sumUniqueIntegers in solution.mjs. It must sum distinct safe integers from an array, ignoring all other values, returning 0 for an empty array, throwing TypeError for a non-array, and preserving the input. Duplicate integers currently inflate the result. Use node --test test.mjs for the original regression checks; preserve test.mjs and original-test.mjs unchanged. Work only inside this task directory, including workflow artifacts. Do not dispatch agents, install dependencies, use Git, or change external files or global settings."
+    ],
+    "cwd": "/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836",
+    "environment": {
+      "PLAYBILL_PROJECT_ROOT": "/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836",
+      "PLAYBILL_MACHINE_DIR": "/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836/machine",
+      "PLAYBILL_STATE_DIR": "/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836/state"
+    },
+    "clearedEnvironment": [
+      "PLAYBILL_DEFAULTS_DIR",
+      "PLAYBILL_CLAUDE_INVENTORY"
+    ],
+    "timeoutMs": 120000,
+    "maxOutputBytes": 2097152,
+    "originalCheckSha256": "18c1fdcef0536d468e55f8e15077f6a77e3fe23b28eaa0f41f83cf23805cfa93"
+  },
+  "baseline": {
+    "exitCode": 1,
+    "stdout": "\u2716 counts repeated integers once (0.918458ms)\n\u2714 ignores values that are not safe integers (0.11275ms)\n\u2714 empty input (0.059917ms)\n\u2714 invalid input (0.220833ms)\n\u2714 preserves frozen input (0.069ms)\n\u2139 tests 5\n\u2139 suites 0\n\u2139 pass 4\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 57.481375\n\n\u2716 failing tests:\n\ntest at test.mjs:4:1\n\u2716 counts repeated integers once (0.918458ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  2 !== 3\n  \n      at TestContext.<anonymous> (file:///Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836/test.mjs:4:52)\n      at Test.runInAsyncScope (node:async_hooks:227:14)\n      at Test.run (node:internal/test_runner/test:1306:25)\n      at Test.start (node:internal/test_runner/test:1177:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 2,\n    expected: 3,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n",
+    "stderr": ""
+  },
+  "initialSummary": {
+    "fixture": "/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836",
+    "exit": {
+      "code": 0,
+      "signal": null
+    },
+    "durationMs": 15751,
+    "passed": false,
+    "originalCheckSha256": "18c1fdcef0536d468e55f8e15077f6a77e3fe23b28eaa0f41f83cf23805cfa93",
+    "nativeInvocations": ["playbill:playbill-brief"],
+    "verificationError": "Missing ordered native activation: playbill:playbill-debug-log"
+  },
+  "independentAudit": {
+    "fixture": ".test-runs-suite-smoke-1788642160836",
+    "originalCheckSha256": "18c1fdcef0536d468e55f8e15077f6a77e3fe23b28eaa0f41f83cf23805cfa93",
+    "passed": false,
+    "hostResult": {
+      "duration_api_ms": 14175,
+      "stop_reason": "end_turn",
+      "session_id": "a8456aaf-84c8-4616-bd30-6e3023fdaa4f",
+      "total_cost_usd": 0.13509880000000002,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 22707,
+        "cache_read_input_tokens": 186304,
+        "output_tokens": 699,
+        "output_tokens_details": {
+          "thinking_tokens": 32
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 22707,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 94,
+            "cache_read_input_tokens": 42630,
+            "cache_creation_input_tokens": 317,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 317
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-sonnet-5": {
+          "inputTokens": 10,
+          "outputTokens": 699,
+          "cacheReadInputTokens": 186304,
+          "cacheCreationInputTokens": 22707,
+          "webSearchRequests": 0,
+          "costUSD": 0.13509880000000002,
+          "contextWindow": 1000000,
+          "maxOutputTokens": 64000,
+          "thinkingTokens": 32,
+          "canonicalModel": "claude-sonnet-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        }
+      },
+      "permission_denials": [],
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "fast_mode_disabled_reason": "sdk_opt_in_required",
+      "subagent_stats": {
+        "spawned": 0,
+        "requested": {
+          "background": 0,
+          "foreground": 0,
+          "unset": 0
+        },
+        "started_in_background": 0,
+        "max_depth": 0,
+        "spawned_by_subagents": 0,
+        "completed": 0,
+        "failed": 0,
+        "killed": {
+          "parent": 0,
+          "user": 0,
+          "system": 0
+        },
+        "refused": {
+          "depth_limit": 0,
+          "concurrency_limit": 0,
+          "budget": 0
+        },
+        "by_type": {}
+      },
+      "is_error": false,
+      "num_turns": 6,
+      "subtype": "success",
+      "api_error_status": null,
+      "result": "All 5 tests pass. Fixed `sumUniqueIntegers` in `solution.mjs` to dedupe safe integers via a `Set` before summing, resolving the duplicate-inflation bug while preserving array/type validation, empty-array, and frozen-input behavior.",
+      "ttft_ms": 2914,
+      "type": "result",
+      "duration_ms": 14600,
+      "uuid": "6794be1d-ab3d-46e3-b874-c4c2c719ca35",
+      "ttft_stream_ms": 2638,
+      "time_to_request_ms": 276,
+      "first_content_frame_ms": 2815,
+      "queued_turn_count": 0
+    },
+    "hookExitCode": 0,
+    "adapterContext": "Debug a reproducible failure\n\nFollow these steps using the current context. Entry grants no permission for Git mutation, global settings, publication, or external messages; honor the actual request and repository instructions.\n\n1. Capture the bug \u2014 invoke `playbill:playbill-brief`; produce `.playbill/debug/brief.md` and `.playbill/debug/progress.md`; Capture the user's current request and existing authorization; initialize cumulative progress before investigation, preserving prior evidence on continuation.\n2. Reproduce and isolate \u2014 invoke `playbill:playbill-debug-log`; consume `.playbill/debug/brief.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; Read relevant documentation and code; run the original reproduction, preserve original checks, and record the baseline and hypothesis in progress before scratch files are reused.\n3. While the original failure remains, a correction is supported by evidence, and code changes are authorized, repeat at most 3 times (check before each iteration; continue afterward):\n  3.1. Apply one correction \u2014 invoke `playbill:playbill-implement`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/work.md`; Apply one evidenced correction; undo only this workflow's ineffective experimental change before trying another.\n  3.2. Check and preserve this attempt \u2014 invoke `playbill:playbill-verify`; consume `.playbill/debug/brief.md`, `.playbill/debug/work.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; Rerun original checks and relevant project checks; append this attempt's change, diagnosis, full outcomes, and remaining failure to progress before overwriting scratch evidence.\n  3.3. If the original failure remains after this attempt:\n    3.3.1. Reassess failed hypotheses \u2014 invoke `playbill:playbill-hard-fix`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/diagnosis.md` and `.playbill/debug/progress.md`; Record why the attempt failed and the next supported hypothesis; append evidence to progress before replacing diagnosis.\n4. Report the outcome \u2014 invoke `playbill:playbill-report`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/report.md`; Report verified behavior, retained instrumentation, and unresolved work; after the attempt cap, stop with remaining failures or missing evidence explicitly recorded.\n\nClaude skill invocation:\n- \"playbill:playbill-blind-spots\": Skill tool with skill=\"playbill:playbill-blind-spots\"\n- \"playbill:playbill-brief\": Skill tool with skill=\"playbill:playbill-brief\"\n- \"playbill:playbill-code-review\": Skill tool with skill=\"playbill:playbill-code-review\"\n- \"playbill:playbill-debug-log\": Skill tool with skill=\"playbill:playbill-debug-log\"\n- \"playbill:playbill-hard-fix\": Skill tool with skill=\"playbill:playbill-hard-fix\"\n- \"playbill:playbill-implement\": Skill tool with skill=\"playbill:playbill-implement\"\n- \"playbill:playbill-plan\": Skill tool with skill=\"playbill:playbill-plan\"\n- \"playbill:playbill-read-docs\": Skill tool with skill=\"playbill:playbill-read-docs\"\n- \"playbill:playbill-report\": Skill tool with skill=\"playbill:playbill-report\"\n- \"playbill:playbill-verify\": Skill tool with skill=\"playbill:playbill-verify\"\nResolve workflow artifact paths relative to project root \"/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836\".\nSkill availability is a discovery snapshot; Claude permissions and live registration still apply.",
+    "artifacts": {},
+    "missingArtifacts": [
+      {
+        "path": ".playbill/debug/brief.md",
+        "error": "ENOENT: no such file or directory, open '.test-runs-suite-smoke-1788642160836/.playbill/debug/brief.md'"
+      },
+      {
+        "path": ".playbill/debug/diagnosis.md",
+        "error": "ENOENT: no such file or directory, open '.test-runs-suite-smoke-1788642160836/.playbill/debug/diagnosis.md'"
+      },
+      {
+        "path": ".playbill/debug/work.md",
+        "error": "ENOENT: no such file or directory, open '.test-runs-suite-smoke-1788642160836/.playbill/debug/work.md'"
+      },
+      {
+        "path": ".playbill/debug/checks.md",
+        "error": "ENOENT: no such file or directory, open '.test-runs-suite-smoke-1788642160836/.playbill/debug/checks.md'"
+      },
+      {
+        "path": ".playbill/debug/progress.md",
+        "error": "ENOENT: no such file or directory, open '.test-runs-suite-smoke-1788642160836/.playbill/debug/progress.md'"
+      },
+      {
+        "path": ".playbill/debug/report.md",
+        "error": "ENOENT: no such file or directory, open '.test-runs-suite-smoke-1788642160836/.playbill/debug/report.md'"
+      }
+    ],
+    "originalIntact": true,
+    "checksIntact": true,
+    "independentChecks": {
+      "exitCode": 0,
+      "stdout": "\u2714 counts repeated integers once (0.468667ms)\n\u2714 ignores values that are not safe integers (0.076708ms)\n\u2714 empty input (0.057041ms)\n\u2714 invalid input (0.198375ms)\n\u2714 preserves frozen input (0.059875ms)\n\u2139 tests 5\n\u2139 suites 0\n\u2139 pass 5\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 50.420416\n",
+      "stderr": ""
+    },
+    "nativeInvocations": ["playbill:playbill-brief"],
+    "activationResults": [
+      {
+        "skill": "playbill:playbill-brief",
+        "response": "Launching skill: playbill:playbill-brief"
+      }
+    ],
+    "error": "Missing ordered native activation: playbill:playbill-debug-log"
+  },
+  "nativeToolUses": [
+    {
+      "type": "tool_use",
+      "id": "toolu_01RQwLweptNWfAxpRQFNb1oH",
+      "name": "Skill",
+      "input": {
+        "skill": "playbill:playbill-brief"
+      },
+      "caller": {
+        "type": "direct"
+      }
+    },
+    {
+      "type": "tool_use",
+      "id": "toolu_01Th1uKS3hCT2jfEf5cNE925",
+      "name": "Bash",
+      "input": {
+        "command": "ls -la && echo --- && cat solution.mjs 2>/dev/null && echo --- && cat test.mjs 2>/dev/null && echo --- && cat original-test.mjs 2>/dev/null"
+      },
+      "caller": {
+        "type": "direct"
+      }
+    },
+    {
+      "type": "tool_use",
+      "id": "toolu_012P7F9rdVNPb5cS7XDoeQbU",
+      "name": "Edit",
+      "input": {
+        "replace_all": false,
+        "file_path": "/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836/solution.mjs",
+        "old_string": "  return values.filter(Number.isSafeInteger).reduce((sum, value) => sum + value, 0);",
+        "new_string": "  const unique = new Set(values.filter(Number.isSafeInteger));\n  return [...unique].reduce((sum, value) => sum + value, 0);"
+      },
+      "caller": {
+        "type": "direct"
+      }
+    },
+    {
+      "type": "tool_use",
+      "id": "toolu_01L576dHPcktiXcPjNZLFahe",
+      "name": "Bash",
+      "input": {
+        "command": "node --test test.mjs"
+      },
+      "caller": {
+        "type": "direct"
+      }
+    }
+  ],
+  "hooks": [
+    {
+      "type": "system",
+      "subtype": "hook_response",
+      "hook_id": "9fabe8af-f90e-43e1-9a59-1cc567c023b0",
+      "hook_name": "SessionStart:startup",
+      "hook_event": "SessionStart",
+      "output": "{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Playbill: Superpowers may also supply workflow instructions (superpowers@claude-plugins-official is enabled in /Users/nielsmadan/.claude/settings.json; launch flags and managed settings may change its actual activation). Both can coexist; check their workflow choices if they overlap.\"},\"systemMessage\":\"Playbill: Superpowers may also supply workflow instructions (superpowers@claude-plugins-official is enabled in /Users/nielsmadan/.claude/settings.json; launch flags and managed settings may change its actual activation). Both can coexist; check their workflow choices if they overlap.\"}\n",
+      "stdout": "{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Playbill: Superpowers may also supply workflow instructions (superpowers@claude-plugins-official is enabled in /Users/nielsmadan/.claude/settings.json; launch flags and managed settings may change its actual activation). Both can coexist; check their workflow choices if they overlap.\"},\"systemMessage\":\"Playbill: Superpowers may also supply workflow instructions (superpowers@claude-plugins-official is enabled in /Users/nielsmadan/.claude/settings.json; launch flags and managed settings may change its actual activation). Both can coexist; check their workflow choices if they overlap.\"}\n",
+      "stderr": "",
+      "exit_code": 0,
+      "outcome": "success",
+      "uuid": "dd9df721-e9f6-4b97-92af-50752ba54773",
+      "session_id": "a8456aaf-84c8-4616-bd30-6e3023fdaa4f"
+    },
+    {
+      "type": "system",
+      "subtype": "hook_response",
+      "hook_id": "8a491c67-27c6-4270-808a-38a5dfa9f0f6",
+      "hook_name": "UserPromptSubmit",
+      "hook_event": "UserPromptSubmit",
+      "output": "{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"Debug a reproducible failure\\n\\nFollow these steps using the current context. Entry grants no permission for Git mutation, global settings, publication, or external messages; honor the actual request and repository instructions.\\n\\n1. Capture the bug \u2014 invoke `playbill:playbill-brief`; produce `.playbill/debug/brief.md` and `.playbill/debug/progress.md`; Capture the user's current request and existing authorization; initialize cumulative progress before investigation, preserving prior evidence on continuation.\\n2. Reproduce and isolate \u2014 invoke `playbill:playbill-debug-log`; consume `.playbill/debug/brief.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; Read relevant documentation and code; run the original reproduction, preserve original checks, and record the baseline and hypothesis in progress before scratch files are reused.\\n3. While the original failure remains, a correction is supported by evidence, and code changes are authorized, repeat at most 3 times (check before each iteration; continue afterward):\\n  3.1. Apply one correction \u2014 invoke `playbill:playbill-implement`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/work.md`; Apply one evidenced correction; undo only this workflow's ineffective experimental change before trying another.\\n  3.2. Check and preserve this attempt \u2014 invoke `playbill:playbill-verify`; consume `.playbill/debug/brief.md`, `.playbill/debug/work.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; Rerun original checks and relevant project checks; append this attempt's change, diagnosis, full outcomes, and remaining failure to progress before overwriting scratch evidence.\\n  3.3. If the original failure remains after this attempt:\\n    3.3.1. Reassess failed hypotheses \u2014 invoke `playbill:playbill-hard-fix`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/diagnosis.md` and `.playbill/debug/progress.md`; Record why the attempt failed and the next supported hypothesis; append evidence to progress before replacing diagnosis.\\n4. Report the outcome \u2014 invoke `playbill:playbill-report`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/report.md`; Report verified behavior, retained instrumentation, and unresolved work; after the attempt cap, stop with remaining failures or missing evidence explicitly recorded.\\n\\nClaude skill invocation:\\n- \\\"playbill:playbill-blind-spots\\\": Skill tool with skill=\\\"playbill:playbill-blind-spots\\\"\\n- \\\"playbill:playbill-brief\\\": Skill tool with skill=\\\"playbill:playbill-brief\\\"\\n- \\\"playbill:playbill-code-review\\\": Skill tool with skill=\\\"playbill:playbill-code-review\\\"\\n- \\\"playbill:playbill-debug-log\\\": Skill tool with skill=\\\"playbill:playbill-debug-log\\\"\\n- \\\"playbill:playbill-hard-fix\\\": Skill tool with skill=\\\"playbill:playbill-hard-fix\\\"\\n- \\\"playbill:playbill-implement\\\": Skill tool with skill=\\\"playbill:playbill-implement\\\"\\n- \\\"playbill:playbill-plan\\\": Skill tool with skill=\\\"playbill:playbill-plan\\\"\\n- \\\"playbill:playbill-read-docs\\\": Skill tool with skill=\\\"playbill:playbill-read-docs\\\"\\n- \\\"playbill:playbill-report\\\": Skill tool with skill=\\\"playbill:playbill-report\\\"\\n- \\\"playbill:playbill-verify\\\": Skill tool with skill=\\\"playbill:playbill-verify\\\"\\nResolve workflow artifact paths relative to project root \\\"/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836\\\".\\nSkill availability is a discovery snapshot; Claude permissions and live registration still apply.\"}}\n",
+      "stdout": "{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"Debug a reproducible failure\\n\\nFollow these steps using the current context. Entry grants no permission for Git mutation, global settings, publication, or external messages; honor the actual request and repository instructions.\\n\\n1. Capture the bug \u2014 invoke `playbill:playbill-brief`; produce `.playbill/debug/brief.md` and `.playbill/debug/progress.md`; Capture the user's current request and existing authorization; initialize cumulative progress before investigation, preserving prior evidence on continuation.\\n2. Reproduce and isolate \u2014 invoke `playbill:playbill-debug-log`; consume `.playbill/debug/brief.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; Read relevant documentation and code; run the original reproduction, preserve original checks, and record the baseline and hypothesis in progress before scratch files are reused.\\n3. While the original failure remains, a correction is supported by evidence, and code changes are authorized, repeat at most 3 times (check before each iteration; continue afterward):\\n  3.1. Apply one correction \u2014 invoke `playbill:playbill-implement`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/work.md`; Apply one evidenced correction; undo only this workflow's ineffective experimental change before trying another.\\n  3.2. Check and preserve this attempt \u2014 invoke `playbill:playbill-verify`; consume `.playbill/debug/brief.md`, `.playbill/debug/work.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; Rerun original checks and relevant project checks; append this attempt's change, diagnosis, full outcomes, and remaining failure to progress before overwriting scratch evidence.\\n  3.3. If the original failure remains after this attempt:\\n    3.3.1. Reassess failed hypotheses \u2014 invoke `playbill:playbill-hard-fix`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/diagnosis.md` and `.playbill/debug/progress.md`; Record why the attempt failed and the next supported hypothesis; append evidence to progress before replacing diagnosis.\\n4. Report the outcome \u2014 invoke `playbill:playbill-report`; consume `.playbill/debug/brief.md`, `.playbill/debug/diagnosis.md`, `.playbill/debug/checks.md` and `.playbill/debug/progress.md`; produce `.playbill/debug/report.md`; Report verified behavior, retained instrumentation, and unresolved work; after the attempt cap, stop with remaining failures or missing evidence explicitly recorded.\\n\\nClaude skill invocation:\\n- \\\"playbill:playbill-blind-spots\\\": Skill tool with skill=\\\"playbill:playbill-blind-spots\\\"\\n- \\\"playbill:playbill-brief\\\": Skill tool with skill=\\\"playbill:playbill-brief\\\"\\n- \\\"playbill:playbill-code-review\\\": Skill tool with skill=\\\"playbill:playbill-code-review\\\"\\n- \\\"playbill:playbill-debug-log\\\": Skill tool with skill=\\\"playbill:playbill-debug-log\\\"\\n- \\\"playbill:playbill-hard-fix\\\": Skill tool with skill=\\\"playbill:playbill-hard-fix\\\"\\n- \\\"playbill:playbill-implement\\\": Skill tool with skill=\\\"playbill:playbill-implement\\\"\\n- \\\"playbill:playbill-plan\\\": Skill tool with skill=\\\"playbill:playbill-plan\\\"\\n- \\\"playbill:playbill-read-docs\\\": Skill tool with skill=\\\"playbill:playbill-read-docs\\\"\\n- \\\"playbill:playbill-report\\\": Skill tool with skill=\\\"playbill:playbill-report\\\"\\n- \\\"playbill:playbill-verify\\\": Skill tool with skill=\\\"playbill:playbill-verify\\\"\\nResolve workflow artifact paths relative to project root \\\"/Users/nielsmadan/wrksp/playbill/dev1/.test-runs-suite-smoke-1788642160836\\\".\\nSkill availability is a discovery snapshot; Claude permissions and live registration still apply.\"}}\n",
+      "stderr": "",
+      "exit_code": 0,
+      "outcome": "success",
+      "uuid": "f3f3d87f-188f-45a8-8518-c2d16d2b9e23",
+      "session_id": "a8456aaf-84c8-4616-bd30-6e3023fdaa4f"
+    }
+  ],
+  "rawEvidence": {
+    "stdout.jsonl": {
+      "path": ".test-runs-suite-smoke-1788642160836/stdout.jsonl",
+      "sha256": "1ea54bb0d40d677cd981b90bff21fd680f9194a2e8b65574f79be10320b500fa"
+    },
+    "stderr.txt": {
+      "path": ".test-runs-suite-smoke-1788642160836/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "command.json": {
+      "path": ".test-runs-suite-smoke-1788642160836/command.json",
+      "sha256": "89f4ffda5d885b9853fb4e136e26586ea3d7a22ff63bb13a09dee9c635aa2d21"
+    },
+    "baseline.json": {
+      "path": ".test-runs-suite-smoke-1788642160836/baseline.json",
+      "sha256": "ca2e2b5cd15829f858958ed6b468ec57042f1591881a860737eb6d1b17c02622"
+    },
+    "summary.json": {
+      "path": ".test-runs-suite-smoke-1788642160836/summary.json",
+      "sha256": "4106ed6afd7fdd73dfe71f1c8e935c3260b5add0e61aeaa3b91e44a24de961b0"
+    },
+    "verification.json": {
+      "path": ".test-runs-suite-smoke-1788642160836/verification.json",
+      "sha256": "327f1f00e9367b339095f9b09fd8bc4ef7209550bf9acc6dc08e50655917c4f2"
+    },
+    "verification-audit.json": {
+      "path": ".test-runs-suite-smoke-1788642160836/verification-audit.json",
+      "sha256": "706b4405ba8733587fa4b33641cf2abf8de5d99ddbb415a53fa3868341e8fd38"
+    },
+    "original-test.mjs": {
+      "path": ".test-runs-suite-smoke-1788642160836/original-test.mjs",
+      "sha256": "18c1fdcef0536d468e55f8e15077f6a77e3fe23b28eaa0f41f83cf23805cfa93"
+    },
+    "test.mjs": {
+      "path": ".test-runs-suite-smoke-1788642160836/test.mjs",
+      "sha256": "18c1fdcef0536d468e55f8e15077f6a77e3fe23b28eaa0f41f83cf23805cfa93"
+    }
+  },
+  "limitations": [
+    "One paid trial establishes task correction and one native bundled activation, not completion of the default workflow or reliable model adherence.",
+    "The model did not run the original failing reproduction before editing; baseline evidence came from the frozen fixture runner.",
+    "The initial verifier stopped at the missing second activation. A separate offline audit retained complete context, host usage, and missing artifacts without changing the original verification or rerunning the model.",
+    "The 120-second, 24-turn, $2 caps were not reached. The host finished in 6 turns; increasing caps would not repair observed early completion.",
+    "No parser, native-name, context-delivery, or original-test defect was observed. The raw trace does not establish why the model skipped steps.",
+    "The Claude filesystem scanner warned about Superpowers settings while the trial used project/local setting sources; this is the documented discovery caveat and not evidence that a Superpowers bootstrap was active.",
+    "Other hosts have deterministic normalization coverage only for this suite; no M4 paid run was made for Codex, Pi, or OpenCode.",
+    "Local raw traces remain in the ignored fixture directory. This checked-in record contains their hashes, command, complete injected context, tool uses, usage, and original-check evidence."
+  ]
+}

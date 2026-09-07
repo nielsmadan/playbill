@@ -1,0 +1,157 @@
+version: 1
+id: longshot
+title: Build a bounded multi-task change
+introduction: Follow these steps in order. Entry grants no permission for Git mutation, global settings, publication, or external messages; honor the actual request and repository instructions. Supply declared fresh contexts through permitted native delegation, without inherited conversation or further delegation; report a missing capability before that step.
+artifacts:
+  - { id: brief, path: .playbill/longshot/brief.md }
+  - { id: notes, path: .playbill/longshot/notes.md }
+  - { id: plan, path: .playbill/longshot/plan.md }
+  - { id: tasks, path: .playbill/longshot/tasks.json, kind: collection }
+  - { id: progress, path: .playbill/longshot/progress.md }
+  - { id: work, path: .playbill/longshot/work.md }
+  - { id: findings, path: .playbill/longshot/findings.md }
+  - { id: checks, path: .playbill/longshot/checks.md }
+  - { id: report, path: .playbill/longshot/report.md }
+outputs: [brief, progress, report]
+steps:
+  - type: step
+    id: capture
+    title: Capture the brief and initialize progress
+    skill: '{{brief}}'
+    produces: [brief, progress]
+    instruction: Capture the current request, acceptance criteria, writable boundaries, prior approvals, and material decisions; initialize cumulative progress before any loop.
+  - type: step
+    id: ground
+    title: Read project evidence
+    skill: '{{read_docs}}'
+    consumes: [brief]
+    produces: [notes]
+  - type: while
+    condition: material decisions about scope, design, or acceptance remain unresolved
+    max_iterations: 3
+    steps:
+      - type: step
+        id: clarify
+        title: Settle the decision frontier
+        skill: '{{decisions}}'
+        consumes: [brief, notes, progress]
+        produces: [brief, progress]
+        instruction: Ask currently answerable material questions and await actual answers; update the brief and append settled decisions. Honor prior approvals; choose routine reversible details and record their rationale.
+  - type: if
+    condition: material decisions are settled and the user has authorized the implementation work
+    then:
+      - type: step
+        id: plan
+        title: Prepare ordered tasks
+        skill: '{{plan}}'
+        consumes: [brief, notes, progress]
+        produces: [plan, tasks]
+        instruction: Reconcile any existing plan with current files and progress; produce a JSON array of task strings in dependency order.
+      - type: for_each
+        collection: tasks
+        as: task
+        max_items: 20
+        steps:
+          - type: step
+            id: implement
+            title: Implement the current task
+            skill: '{{implement}}'
+            consumes: [brief, notes, plan, progress]
+            produces: [work]
+            requires: { fresh: true, read_only: false, model: capable }
+            agent: { fresh: true, read_only: false, model: capable }
+            instruction: Supply the current task string and artifact paths; implement its scoped work and record evidence, skipping tasks already verified in progress.
+          - type: step
+            id: review
+            title: Independently review the task
+            skill: '{{task_review}}'
+            consumes: [brief, notes, plan]
+            produces: [findings]
+            requires: { fresh: true, read_only: true, model: capable }
+            agent: { fresh: true, read_only: true, model: capable }
+            instruction: Supply the current task string; inspect actual source changes against the plan without the implementer's reasoning. Return findings for the coordinator to persist.
+          - type: while
+            condition: actionable task findings remain
+            max_iterations: 3
+            steps:
+              - type: step
+                id: fix
+                title: Correct task findings
+                skill: '{{implement}}'
+                consumes: [brief, plan, work, findings, progress]
+                produces: [work, progress]
+                instruction: Append current implementation evidence, findings, and their disposition to progress before correction or scratch overwrite; correct supported findings within scope.
+              - type: step
+                id: rereview
+                title: Re-review the corrections
+                skill: '{{task_review}}'
+                consumes: [brief, plan, findings]
+                produces: [findings]
+                requires: { fresh: true, read_only: true, model: capable }
+                agent: { fresh: true, read_only: true, model: capable }
+                instruction: Inspect corrections and return remaining findings for the coordinator to persist.
+          - type: step
+            id: verify
+            title: Verify and retain task evidence
+            skill: '{{verify}}'
+            consumes: [brief, plan, work, findings, progress]
+            produces: [checks, progress]
+            instruction: The coordinator runs project checks; append this task's identity, changed paths, review disposition, and complete outcomes before scratch reuse. Stop and report failed checks or unresolved material findings after the correction cap.
+      - type: step
+        id: final_review
+        title: Review the complete change
+        skill: '{{final_review}}'
+        consumes: [brief, notes, plan, progress]
+        produces: [findings]
+        requires: { fresh: true, read_only: true, model: capable }
+        agent: { fresh: true, read_only: true, model: capable }
+        instruction: Review the complete change for acceptance and cross-task interface consistency; return findings for the coordinator to persist.
+      - type: while
+        condition: actionable final findings remain
+        max_iterations: 2
+        steps:
+          - type: step
+            id: final_fix
+            title: Correct final findings
+            skill: '{{implement}}'
+            consumes: [brief, plan, findings, progress]
+            produces: [work, progress]
+            instruction: Append the current findings and correction evidence to progress before scratch reuse.
+          - type: step
+            id: final_check
+            title: Check the final correction
+            skill: '{{verify}}'
+            consumes: [brief, work, progress]
+            produces: [checks, progress]
+            instruction: Append all check outcomes to progress; stop and report any failed acceptance check.
+          - type: step
+            id: final_rereview
+            title: Re-review final corrections
+            skill: '{{final_review}}'
+            consumes: [brief, plan, findings]
+            produces: [findings]
+            requires: { fresh: true, read_only: true, model: capable }
+            agent: { fresh: true, read_only: true, model: capable }
+            instruction: Return remaining findings for the coordinator to persist.
+      - type: step
+        id: retain_final
+        title: Preserve final findings
+        skill: '{{report}}'
+        consumes: [findings, progress]
+        produces: [progress]
+        instruction: Append final review coverage and every remaining finding; record completion only when acceptance checks and material findings are resolved.
+    else:
+      - type: step
+        id: pending
+        title: Record what is pending
+        skill: '{{report}}'
+        consumes: [brief, progress]
+        produces: [progress]
+        instruction: Record unresolved material decisions or missing implementation authorization; present them to the user and stop implementation.
+  - type: step
+    id: handoff
+    title: Hand off the outcome
+    skill: '{{report}}'
+    consumes: [brief, progress]
+    produces: [report]
+    instruction: Report completed tasks, rulings, evidence, unavailable checks, and remaining work honestly, including any reached loop cap.

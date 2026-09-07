@@ -31,7 +31,7 @@ export function nativeContext(
     host === 'pi'
       ? '\nPi has no standard fresh-subagent tool. If a step requires a capability unavailable in this session, report the missing capability and stop that step; preserve its declared contract.'
       : '\nAgent contracts require actual host capabilities; report any unavailable capability before that step.';
-  const context = `${result.commonProse}\n${host} skill invocation:\n${mapping}${root ? `\nResolve workflow artifact paths relative to project root ${JSON.stringify(root)}.` : ''}\nSkill availability is a discovery snapshot; native permissions and live registration still apply.${capability}${restore ? '\nWorkflow reference restored. Continue from the conversation summary and existing artifacts.' : ''}`;
+  const context = `${result.commonProse}\n${host} skill invocation:\n${mapping}\nAfter loading each skill, apply its technique to the current step's title and instruction, task string (current collection item or user request), input/output artifact paths, and declared agent scope.${root ? `\nResolve workflow artifact paths relative to project root ${JSON.stringify(root)}.` : ''}\nSkill availability is a discovery snapshot; native permissions and live registration still apply.${capability}${restore ? '\nWorkflow reference restored. Continue from the conversation summary and existing artifacts.' : ''}`;
   if (Buffer.byteLength(context) > CONTEXT_BYTES)
     fail(
       'LIMIT',

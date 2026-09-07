@@ -1,0 +1,86 @@
+version: 1
+id: plan
+title: Plan a scoped change
+introduction: Follow these steps in order. Entry grants no permission for Git mutation, global settings, publication, or external messages; honor the actual request and repository instructions. Fresh read-only planning needs actual permitted host delegation; report a capability gap before that step.
+artifacts:
+  - { id: brief, path: .playbill/plan/brief.md }
+  - { id: notes, path: .playbill/plan/notes.md }
+  - { id: plan, path: .playbill/plan/plan.md }
+  - { id: tasks, path: .playbill/plan/tasks.json, kind: collection }
+  - { id: progress, path: .playbill/plan/progress.md }
+  - { id: work, path: .playbill/plan/work.md }
+  - { id: checks, path: .playbill/plan/checks.md }
+  - { id: report, path: .playbill/plan/report.md }
+outputs: [brief, plan, tasks, progress, report]
+steps:
+  - type: step
+    id: capture
+    title: Capture scope and initialize progress
+    skill: '{{brief}}'
+    produces: [brief, progress]
+    instruction: Capture the current request, prior approvals, and unresolved material decisions; initialize cumulative progress.
+  - type: step
+    id: ground
+    title: Read project evidence
+    skill: '{{read_docs}}'
+    consumes: [brief]
+    produces: [notes]
+  - type: step
+    id: draft
+    title: Draft the grounded plan
+    skill: '{{plan}}'
+    consumes: [brief, notes, progress]
+    produces: [plan, tasks]
+    requires: { fresh: true, read_only: true, model: capable }
+    agent: { fresh: true, read_only: true, model: capable }
+    instruction: Delegate planning with these artifacts, without conversation inheritance or further delegation; return the plan and JSON array of task strings for the coordinator to persist.
+  - type: while
+    condition: unresolved material decisions remain in the brief or plan
+    max_iterations: 3
+    steps:
+      - type: step
+        id: clarify
+        title: Resolve the current decision frontier
+        skill: '{{decisions}}'
+        consumes: [brief, notes, plan, progress]
+        produces: [brief, plan, tasks, progress]
+        instruction: Ask only currently answerable material questions, await actual answers, and update dependent plan details and task strings. Honor prior approvals and record each settled decision in progress.
+  - type: if
+    condition: material decisions are settled, implementation is requested, and no prior approval covers the planned work
+    then:
+      - type: step
+        id: present
+        title: Present the plan for its missing approval
+        skill: '{{report}}'
+        consumes: [brief, plan, progress]
+        produces: [brief, plan, tasks, progress]
+        instruction: Present the concrete plan, request implementation approval once, and await an actual answer; record that answer, update the brief and task plan for approved changes, and retain newly unresolved material decisions as pending.
+  - type: if
+    condition: material decisions are settled and the user has authorized implementation of this plan or already authorized the work it describes
+    then:
+      - type: for_each
+        collection: tasks
+        as: task
+        max_items: 12
+        steps:
+          - type: step
+            id: implement
+            title: Implement the current task
+            skill: '{{implement}}'
+            consumes: [brief, notes, plan, progress]
+            produces: [work]
+            instruction: Implement only the current task string; skip work already verified in progress.
+          - type: step
+            id: verify
+            title: Verify and retain task evidence
+            skill: '{{verify}}'
+            consumes: [brief, plan, work, progress]
+            produces: [checks, progress]
+            instruction: Append this task's identity, changed paths, full check outcomes, and unresolved work to progress before scratch files are reused. Stop implementation and report any failed acceptance check.
+  - type: step
+    id: handoff
+    title: Hand off the plan and outcome
+    skill: '{{report}}'
+    consumes: [brief, plan, tasks, progress]
+    produces: [report]
+    instruction: Distinguish planned, implemented, and verified tasks; record unresolved decisions or missing approval as pending, including if the decision cap was reached.

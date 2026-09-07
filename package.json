@@ -27,6 +27,7 @@
   "files": [
     "dist",
     "docs/formats.md",
+    "docs/suite.md",
     "adapters",
     ".claude-plugin",
     ".codex-plugin",

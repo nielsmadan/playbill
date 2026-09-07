@@ -1,0 +1,39 @@
+version: 1
+id: review
+title: Review a defined change
+introduction: Follow these steps in order. Entry grants no permission for Git mutation, global settings, publication, or external messages; honor the actual request and repository instructions. If fresh read-only delegation is unavailable, report that capability gap before the review step.
+artifacts:
+  - { id: brief, path: .playbill/review/brief.md }
+  - { id: notes, path: .playbill/review/notes.md }
+  - { id: findings, path: .playbill/review/findings.md }
+  - { id: report, path: .playbill/review/report.md }
+outputs: [brief, findings, report]
+steps:
+  - type: step
+    id: capture
+    title: Capture review scope
+    skill: '{{brief}}'
+    produces: [brief]
+    instruction: Capture the current request; identify exact files or comparison base and acceptance criteria using read-only inspection. The coordinator may write these review artifacts.
+  - type: step
+    id: ground
+    title: Ground the review
+    skill: '{{read_docs}}'
+    consumes: [brief]
+    produces: [notes]
+  - type: step
+    id: inspect
+    title: Review specification and quality
+    skill: '{{final_review}}'
+    consumes: [brief, notes]
+    produces: [findings]
+    requires: { fresh: true, read_only: true, model: capable }
+    agent: { fresh: true, read_only: true, model: capable }
+    instruction: Delegate only this scoped review, without conversation inheritance or further delegation; return findings for the coordinator to persist. Inspect source directly; return mutating check commands as unexecuted.
+  - type: step
+    id: handoff
+    title: Present actionable findings
+    skill: '{{report}}'
+    consumes: [brief, findings]
+    produces: [report]
+    instruction: Present findings and coverage limitations. A request to review supplies no authorization to apply fixes.
