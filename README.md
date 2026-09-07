@@ -25,6 +25,21 @@ fixture commands.
 The [Claude adapter guide](docs/adapters/claude.md) covers local plugin loading,
 configuration discovery, workflow requests, native skills, and smoke evidence.
 
+To install the CLI from this checkout, use Just:
+
+```sh
+just install
+just install-editable
+just uninstall
+```
+
+`install` installs dependencies, builds, and copies the current package into npm's global
+prefix. Re-run it to replace the installed snapshot after changes, even at the same version.
+`install-editable` links the global command to this checkout; run `npm run build` after editing
+TypeScript to update that command. `uninstall` removes either installation and preserves your
+workflow configuration. These are Just recipes because npm reserves `install` as a dependency
+installation lifecycle hook.
+
 Development commands:
 
 ```sh
