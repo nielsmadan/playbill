@@ -1,6 +1,13 @@
 # Contained historical bug replay
 
-Date: 2026-09-06. Playbill M4 acceptance remains open.
+Updated: 2026-09-07. Playbill M4 acceptance remains open.
+
+Three unchanged-production repetitions are now complete. Workflow handling was
+inconsistent: retrospective handoffs, skipped skills, and substantial execution
+with an early-baseline deviation. All supplied checks passed; only one run passed
+the extra retry probe. See [the repetition report](workflow-repetitions.md) for
+separate workflow, evidence and correctness results. The earlier control series
+below remains preserved.
 
 Unchanged production Playbill executed all five main debug steps and created all
 six artifacts using default tools and high effort. Its supplied checks passed
