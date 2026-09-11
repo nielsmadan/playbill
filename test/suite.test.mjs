@@ -291,9 +291,10 @@ test('project configuration disables default entry and project pipelines replace
   }
 });
 
-test('every default fits complete restored host contexts including Claude mapping, root, and coexistence warning', (t) => {
+test('every default fits complete restored host contexts including Claude mapping, root, and coexistence warning', async (t) => {
   const f = fixture(t);
   const inventories = f.inventories();
+  write(f.config, '[workflows.debug.coordination]\nenabled = false\n');
   for (const workflow of ['debug', 'plan', 'review', 'longshot']) {
     for (const [host, inventory] of Object.entries(inventories)) {
       const result = f.render('', inventory, 'restore', workflow);
@@ -325,7 +326,7 @@ test('every default fits complete restored host contexts including Claude mappin
       hook_event_name: 'UserPromptSubmit',
       prompt: `[playbill:${workflow}] Work on the task`,
     };
-    const entered = handleClaudeEvent(event, f.env);
+    const entered = await handleClaudeEvent(event, f.env);
     assert.match(
       entered.hookSpecificOutput.additionalContext,
       /skill invocation:/u,
@@ -334,9 +335,11 @@ test('every default fits complete restored host contexts including Claude mappin
       join(f.env.CLAUDE_CONFIG_DIR, 'settings.json'),
       '{"enabledPlugins":{"superpowers@suite-fixture":true}}',
     );
-    const restored = handleClaudeEvent(
-      { ...event, hook_event_name: 'SessionStart', source: 'compact' },
-      f.env,
+    const restored = (
+      await handleClaudeEvent(
+        { ...event, hook_event_name: 'SessionStart', source: 'compact' },
+        f.env,
+      )
     ).hookSpecificOutput.additionalContext;
     assert.match(restored, /Workflow reference restored/u);
     assert.match(restored, /Superpowers may also supply/u);

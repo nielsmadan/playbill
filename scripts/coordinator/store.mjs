@@ -5,7 +5,14 @@ import {
   readFileSync,
   rmdirSync,
 } from 'node:fs';
-import { ensure, hash, runtime, safePath, same, writeJSON } from './files.mjs';
+import {
+  ensure,
+  hash,
+  runtimePath,
+  safePath,
+  same,
+  writeJSON,
+} from './files.mjs';
 import { setTimeout } from 'node:timers/promises';
 import { persistHistory, validateHistory } from './history.mjs';
 import { validateReportReview } from './report-review.mjs';
@@ -68,6 +75,21 @@ function validate(state, config) {
           typeof visit.activation.toolUseId === 'string'),
       'Malformed activation',
     );
+    if (visit.decision) {
+      const condition = config.steps.find(
+        (step) => step.id === visit.nodeId,
+      ).condition;
+      ensure(
+        condition &&
+          visit.decision.visitId === visit.id &&
+          visit.decision.condition === condition.id &&
+          visit.decision.expression === condition.expression &&
+          typeof visit.decision.value === 'boolean' &&
+          typeof visit.decision.rationale === 'string' &&
+          visit.decision.rationale.trim(),
+        'Malformed condition decision',
+      );
+    }
     const lease = visit.checkLease;
     if (lease !== null && lease !== undefined) {
       const inputs = [
@@ -89,8 +111,9 @@ function validate(state, config) {
           lease.sessionId === state.sessionId &&
           Object.hasOwn(config.checks, lease.check) &&
           Number.isFinite(Date.parse(lease.reservedAt)) &&
-          lease.rawPath === `${runtime}/checks/${lease.id}.raw.json` &&
-          lease.path === `${runtime}/checks/${lease.id}.json` &&
+          lease.rawPath ===
+            `${runtimePath(config)}/checks/${lease.id}.raw.json` &&
+          lease.path === `${runtimePath(config)}/checks/${lease.id}.json` &&
           lease.inputs &&
           same(Object.keys(lease.inputs), inputs) &&
           Object.values(lease.inputs).every(
@@ -103,7 +126,9 @@ function validate(state, config) {
     }
     if (index < state.history.length)
       ensure(
-        visit.completedAt && visit.activation && visit.artifacts,
+        visit.completedAt &&
+          (visit.activation || visit.decision) &&
+          visit.artifacts,
         'Malformed completed visit',
       );
   }
@@ -132,9 +157,9 @@ export async function transaction(
   operation,
   { readOnly = false } = {},
 ) {
-  const directory = safePath(config.root, runtime);
+  const directory = safePath(config.root, runtimePath(config));
   mkdirSync(directory, { recursive: true });
-  const lock = safePath(config.root, `${runtime}/lock`);
+  const lock = safePath(config.root, `${runtimePath(config)}/lock`);
   const deadline = Date.now() + 65000;
   for (;;) {
     try {
@@ -150,8 +175,14 @@ export async function transaction(
     }
   }
   try {
-    const statePath = safePath(config.root, `${runtime}/state.json`);
-    const journalPath = safePath(config.root, `${runtime}/events.jsonl`);
+    const statePath = safePath(
+      config.root,
+      `${runtimePath(config)}/state.json`,
+    );
+    const journalPath = safePath(
+      config.root,
+      `${runtimePath(config)}/events.jsonl`,
+    );
     let state = null;
     let lines = [];
     if (existsSync(statePath)) {
@@ -244,7 +275,7 @@ export async function transaction(
         journalPath,
         events.map((event) => JSON.stringify(event) + '\n').join(''),
       );
-      writeJSON(config.root, `${runtime}/state.json`, tx.state);
+      writeJSON(config.root, `${runtimePath(config)}/state.json`, tx.state);
     }
     if (failure) throw failure;
     return result;

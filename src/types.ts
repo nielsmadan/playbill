@@ -14,7 +14,16 @@ export interface Triggers {
   repo_conditions?: ('git' | 'clean' | 'dirty')[];
 }
 
+export interface CoordinationPolicy {
+  report_artifact?: string;
+  redirect_threshold?: number;
+  ask_on_redirect?: boolean;
+  enabled?: boolean;
+  artifact_scope?: 'project' | 'run';
+}
+
 export interface WorkflowPolicy {
+  coordination?: CoordinationPolicy;
   entry?: 'auto' | 'explicit' | 'disabled';
   priority?: number;
   triggers?: Triggers;

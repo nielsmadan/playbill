@@ -3,10 +3,12 @@
 Playbill binds named workflow slots to installed skills, declares when workflows
 can start, and renders YAML pipelines into instructions for coding agents.
 
-The shared validator, CLI, and Claude Code reference adapter are implemented.
-The other harness adapters and default workflow suite are later milestones.
-This is a model-executed router; validation
-checks declarations and composition, not whether a model follows instructions.
+The package includes the shared validator, CLI, four host adapters, and bundled
+workflows and skills. On Claude and Codex, the default debug workflow uses an
+[installed coordinator](docs/adapters/installed-coordinator.md) to retain visits,
+require native skill receipts and fresh artifacts, and record branch decisions.
+Other workflows and the Pi/OpenCode adapters deliver rendered instructions.
+These checks do not establish that the model followed a technique or repaired the bug.
 
 Use Node 24.x:
 

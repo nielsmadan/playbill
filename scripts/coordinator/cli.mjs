@@ -1,9 +1,8 @@
 import process from 'node:process';
 import { Buffer } from 'node:buffer';
-import { realpathSync } from 'node:fs';
 import { configuration } from './config.mjs';
 import { execute } from './core.mjs';
-import { ensure } from './files.mjs';
+import { ensure, withinRoot } from './files.mjs';
 import { conversationSummary } from './conversation.mjs';
 
 try {
@@ -17,25 +16,39 @@ try {
         'review-decision',
         'check',
         'complete',
+        'decide',
         'pause',
         'resume',
         'exit',
         'intent',
       ].includes(command) &&
-      (command === 'intent'
-        ? Boolean(argument) && extra.length === 1
-        : extra.length === 0 &&
-          (['complete', 'review-decision'].includes(command)
-            ? Boolean(argument)
-            : command === 'check' || argument === undefined)),
-    'Usage: node cli.mjs CONFIG status|history|review|review-decision FILE|check [NAME]|complete VISIT|pause|resume|exit|intent TURN question|redirect|return|replace',
+      (command === 'decide'
+        ? Boolean(argument) &&
+          extra.length === 3 &&
+          ['true', 'false'].includes(extra[1])
+        : command === 'intent'
+          ? Boolean(argument) && extra.length === 1
+          : extra.length === 0 &&
+            (['complete', 'review-decision'].includes(command)
+              ? Boolean(argument)
+              : command === 'check' || argument === undefined)),
+    'Usage: node cli.mjs CONFIG status|history|review|review-decision FILE|check [NAME]|complete VISIT|decide VISIT CONDITION true|false RATIONALE|pause|resume|exit|intent TURN question|redirect|return|replace',
   );
   const config = configuration(path);
-  ensure(realpathSync(process.cwd()) === config.root, 'CLI cwd/root mismatch');
+  ensure(withinRoot(config.root, process.cwd()), 'CLI cwd/root mismatch');
   const result = await execute(
     config,
     command,
-    command === 'intent' ? { turn: argument, kind: extra[0] } : argument,
+    command === 'decide'
+      ? {
+          visit: argument,
+          condition: extra[0],
+          value: extra[1] === 'true',
+          rationale: extra[2],
+        }
+      : command === 'intent'
+        ? { turn: argument, kind: extra[0] }
+        : argument,
     process.env.PLAYBILL_COORDINATOR_SESSION_ID,
   );
   const { state, check } = result;

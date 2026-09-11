@@ -16,9 +16,9 @@ claude --plugin-dir /absolute/path/to/playbill
 Load the plugin through Claude's normal local-plugin/trust mechanism. A checkout
 needs `dist/` and `node_modules/`; the hook reports an actionable build error if
 the compiled adapter cannot load. The manifest points directly at
-`adapters/claude/hooks.json`. The two commands quote `CLAUDE_PLUGIN_ROOT` and send
+`adapters/claude/hooks.json`. The hook commands quote `CLAUDE_PLUGIN_ROOT` and send
 hook JSON through stdin; user text and configuration paths never become shell
-commands. This milestone does not ship the full default workflow suite.
+commands. The package includes the default workflow suite.
 
 `SessionStart` validates all configured bindings and workflows. It does not
 select a workflow from startup metadata. `UserPromptSubmit` repeats discovery and
@@ -161,6 +161,14 @@ plugin names such as `company:review`. Other adapters can return byte-identical
 agent contracts do not create host capabilities or fresh agents.
 
 ## Sessions and coexistence
+
+The default debug workflow uses the [installed coordinator](installed-coordinator.md).
+Its active or released run routes before configuration selection and inventory
+lookup. Native `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `Stop` and
+`SessionEnd` hooks accompany startup/prompt hooks. Claude Skill invocation names
+are mapped separately from canonical technique identities. Compaction/resume
+restores the current visit from its frozen configuration. The selection-only
+behavior below applies to rendered workflows.
 
 Session state contains only a schema version, the last selected workflow ID, and
 a Superpowers-warning flag. On `SessionStart` with `source: compact` or `resume`,

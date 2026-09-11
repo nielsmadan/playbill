@@ -36,3 +36,8 @@ entry = "auto"
 priority = 10
 [workflows.debug.triggers]
 keywords = ["debug", "fix", "investigate bug"]
+
+[workflows.debug.coordination]
+enabled = true
+artifact_scope = "run"
+report_artifact = "report"

@@ -4,8 +4,9 @@ All four adapters invoke the same Node 24 validator executable,
 `dist/runtime-cli.js`. A version-1 JSON request carries the host cwd, normalized
 native inventory, event (`start`, `prompt`, `restore`), optional prompt text and
 configuration discovery roots. A response separates common workflow prose from
-canonical-to-native invocation mappings. There is no workflow runner or alternate
-configuration dialect. See [the format reference](../formats.md).
+canonical-to-native invocation mappings. Native Claude/Codex requests may also
+receive a graph lowered from the same validated AST when the selected workflow
+enables coordination. This graph runs through the existing coordinator. See [the format reference](../formats.md).
 
 Configuration layers load bundled `defaults/`, machine settings at
 `~/.config/playbill`, then project `.playbill`, with project values winning.
@@ -52,7 +53,9 @@ Files are bounded to 4 KiB, limited to 128 records and pruned after seven days.
 Claude retains its existing equivalent store and coexistence-warning flag.
 New sessions reset selection; resume and compaction revalidate it. Entry-only
 policy allows an existing selection to survive a later entry-policy change.
-Invalid configuration clears it. No adapter stores step progress or artifacts.
+Invalid configuration clears it. These selection stores apply to rendered workflows. Coordinated native workflows
+retain their own immutable run configuration, visit state, journal, and snapshots;
+see the [installed coordinator contract](installed-coordinator.md).
 
 `npm test` is deterministic and offline. It uses real Pi resource/extension
 loaders and an actual OpenCode SDK client with offline native event/HTTP fixtures.

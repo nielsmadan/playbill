@@ -1,9 +1,9 @@
 # Codex adapter
 
-The adapter targets Codex 0.153.4 and Node 24. Build this checkout with
+The installed coordinator targets Codex 0.154.0 and Node 24. Build this checkout with
 `npm ci && npm run build`. The manifest at `.codex-plugin/plugin.json` selects
-`adapters/codex/hooks.json`; both `SessionStart` and `UserPromptSubmit` call the
-production hook entrypoint. A normal plugin installation supplies `PLUGIN_ROOT`
+`adapters/codex/hooks.json`; `SessionStart`, `UserPromptSubmit`, `PreToolUse`,
+`PostToolUse`, `Stop`, and `SessionEnd` call the production hook entrypoint. A normal plugin installation supplies `PLUGIN_ROOT`
 and `PLUGIN_DATA`. Codex also supplies Claude-compatible aliases.
 
 For an existing marketplace containing this repository, the user installs with
@@ -13,7 +13,7 @@ itself uses `./`. This milestone supplies the adapter and package seams; public
 marketplace distribution is separate. See the official
 [plugin packaging reference](https://developers.openai.com/plugins/build/plugins).
 
-For project-local testing without installing a plugin, copy the two event
+For project-local testing without installing a plugin, copy the event
 registrations into the project's `.codex/hooks.json`, replace each command with
 `node "/absolute/path/to/playbill/adapters/codex/hook.mjs"`, and enable
 `[features] hooks = true` in normal Codex configuration. This mode runs the same
@@ -47,7 +47,7 @@ inside quoted path segments; `-c 'hooks.state."/path.with.dots/..."...'` therefo
 does not create the intended key. The smoke preflight reads hashes, applies the
 ephemeral table, and independently confirms both groups report `trusted`.
 
-Both handlers set `additionalContextLimit: 0` because the adapter bounds the
+Context-producing handlers set `additionalContextLimit: 0` because the adapter bounds the
 **complete** workflow, invocation appendix, artifact root and restoration text
 to 16 KiB. Oversized instructions produce an error and clear the selection;
 there is no partial workflow. The setting prevents Codex's default context
@@ -55,9 +55,18 @@ preview/file spill. Hook timeout is 15 seconds, allowing five seconds each for
 native discovery and the shared validator. See the
 [Codex hooks reference](https://developers.openai.com/codex/hooks).
 
+The [installed debug coordinator](installed-coordinator.md) returns the current
+visit, records exact native full-file skill-read receipts, and retains condition
+decisions and execution history. Active and released runs route before inventory
+or trigger discovery. Tool and Stop events with no coordinated run stay quiet.
+`Stop` returns only `{}` or a block decision with a reason; Codex 0.154.0 does not
+register Claude's `PostToolUseFailure` event. Packed artifacts include the runtime
+YAML/TOML dependencies and coordinator modules.
+
 ## Native inventory
 
-By default, each hook starts a bounded, read-only `codex -C <cwd> app-server`,
+Startup and prompt events without a retained coordinated run start a bounded,
+read-only `codex -C <cwd> app-server`,
 initializes the experimental protocol, requests `skills/list` with that cwd and
 `forceReload: true`, then terminates the helper. It never starts threads, turns,
 or model calls. Discovery has a five-second process deadline and a 2 MiB combined

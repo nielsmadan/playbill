@@ -1,3 +1,5 @@
+import { compileCoordinator } from './coordinator-compiler.js';
+import type { CoordinatorPlan } from './coordinator-compiler.js';
 import { discoverConfiguration, gitOutput } from './discovery.js';
 import { errorMessage, fail, PlaybillError } from './diagnostics.js';
 import { validateRegistry } from './registry.js';
@@ -6,7 +8,7 @@ import { identifier, record, text, version } from './schema.js';
 import { candidateFiles, selectWorkflow, validCandidate } from './triggers.js';
 import { validatePipeline } from './validator.js';
 import type { DiscoveryOptions } from './discovery.js';
-import type { Diagnostic, InstalledSkill } from './types.js';
+import type { Diagnostic, InstalledSkill, ValidatedPipeline } from './types.js';
 
 export interface NativeSkill extends InstalledSkill {
   invocation: string;
@@ -22,6 +24,7 @@ export interface RuntimeRequest {
   resumeWorkflow?: string;
   discovery?: DiscoveryOptions;
   inventory: NativeSkill[];
+  coordinationHost?: 'claude' | 'codex';
 }
 
 export interface RuntimeResult {
@@ -30,6 +33,7 @@ export interface RuntimeResult {
   commonProse: string;
   diagnostics: Diagnostic[];
   selected?: string;
+  coordination?: CoordinatorPlan;
   invocations: { id: string; invocation: string; path: string }[];
 }
 
@@ -57,9 +61,15 @@ export function runRuntime(input: unknown): RuntimeResult {
       'resumeWorkflow',
       'discovery',
       'inventory',
+      'coordinationHost',
     ]);
     version(data.version, 'request.version');
     const cwd = text(data.cwd, 'request.cwd');
+    if (
+      data.coordinationHost !== undefined &&
+      !['claude', 'codex'].includes(String(data.coordinationHost))
+    )
+      fail('HOST', 'request.coordinationHost', 'Expected claude or codex.');
     if (!['start', 'prompt', 'restore'].includes(String(data.event)))
       fail('EVENT', 'request.event', 'Expected start, prompt, or restore.');
     const discovery = record(data.discovery ?? {}, 'request.discovery', [
@@ -136,6 +146,7 @@ export function runRuntime(input: unknown): RuntimeResult {
         );
     }
     const validated = new Map<string, string>();
+    const asts = new Map<string, ValidatedPipeline>();
     for (const id of Object.keys(config.workflows)) {
       const pipeline = pipelines.get(id);
       if (!pipeline)
@@ -144,10 +155,9 @@ export function runRuntime(input: unknown): RuntimeResult {
           `config.workflows.${id}`,
           `Add pipelines/${id}.yaml to a Playbill configuration layer.`,
         );
-      validated.set(
-        id,
-        renderPipeline(validatePipeline(pipeline, config, registry)),
-      );
+      const ast = validatePipeline(pipeline, config, registry);
+      asts.set(id, ast);
+      validated.set(id, renderPipeline(ast));
     }
     let selected: string | undefined;
     if (data.event === 'prompt') {
@@ -178,9 +188,25 @@ export function runRuntime(input: unknown): RuntimeResult {
       const id = identifier(data.resumeWorkflow, 'request.resumeWorkflow');
       if (config.workflows[id]) selected = id;
     }
+    const policy = selected
+      ? config.workflows[selected]?.coordination
+      : undefined;
+    const coordination =
+      data.event === 'prompt' &&
+      selected &&
+      data.coordinationHost &&
+      policy?.enabled
+        ? compileCoordinator(
+            asts.get(selected)!,
+            root,
+            data.inventory as NativeSkill[],
+            policy,
+          )
+        : undefined;
     return {
       version: 1,
       ok: true,
+      ...(coordination ? { coordination } : {}),
       diagnostics: [],
       commonProse: selected ? validated.get(selected)! : '',
       ...(selected ? { selected } : {}),

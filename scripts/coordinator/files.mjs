@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import {
   lstatSync,
+  realpathSync,
+  statSync,
   mkdirSync,
   readFileSync,
   renameSync,
@@ -9,6 +11,31 @@ import {
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
 export const runtime = '.playbill/coordinator/runtime';
+export const runtimePath = (config) => config.runtime ?? runtime;
+
+export function skillFile(config, path) {
+  if (!isAbsolute(path)) return safePath(config.root, path);
+  ensure(
+    config.installedSkills === true,
+    'Absolute skill file requires installedSkills',
+  );
+  const canonical = realpathSync(path);
+  const stat = statSync(canonical);
+  ensure(
+    stat.isFile() && stat.size <= 4 * 1024 * 1024,
+    'Invalid installed skill file',
+  );
+  readFileSync(canonical);
+  return canonical;
+}
+
+export function withinRoot(root, cwd) {
+  const path = relative(root, realpathSync(cwd));
+  return (
+    path === '' ||
+    (!isAbsolute(path) && path !== '..' && !path.startsWith('../'))
+  );
+}
 
 export const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 export const ensure = (condition, message) => {
@@ -84,4 +111,41 @@ export function writeJSON(root, name, value, exclusive = false) {
     writeFileSync(temporary, bytes, { flag: 'wx' });
     renameSync(temporary, path);
   }
+}
+
+export function commandWords(command) {
+  if (typeof command !== 'string') return null;
+  const words = [];
+  let value = '';
+  let started = false;
+  let quote = null;
+  for (let i = 0; i < command.length; i++) {
+    const char = command[i];
+    if (quote === "'") {
+      if (char === "'") quote = null;
+      else value += char;
+    } else if (quote === '"') {
+      if (char === '"') quote = null;
+      else if (['$', '`', '\\'].includes(char)) return null;
+      else value += char;
+    } else if (char === "'" || char === '"') {
+      quote = char;
+      started = true;
+    } else if (char === '\\') {
+      if (++i === command.length || command[i] === '\n') return null;
+      value += command[i];
+      started = true;
+    } else if (/\s/u.test(char)) {
+      if (started) words.push(value);
+      value = '';
+      started = false;
+    } else {
+      if ('|&;<>`$()'.includes(char)) return null;
+      value += char;
+      started = true;
+    }
+  }
+  if (quote) return null;
+  if (started) words.push(value);
+  return words;
 }

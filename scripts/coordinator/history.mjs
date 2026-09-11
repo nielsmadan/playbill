@@ -4,18 +4,18 @@ import {
   ensure,
   fileHash,
   hash,
-  runtime,
+  runtimePath,
   safePath,
   same,
   snapshot,
   writeJSON,
 } from './files.mjs';
 
-export const historyPaths = {
-  json: `${runtime}/execution-history.json`,
-  markdown: `${runtime}/execution-history.md`,
-};
-const journalPath = `${runtime}/events.jsonl`;
+export const historyPathsFor = (config) => ({
+  json: `${runtimePath(config)}/execution-history.json`,
+  markdown: `${runtimePath(config)}/execution-history.md`,
+});
+export const historyPaths = historyPathsFor({});
 const digest = (event) => {
   const content = { ...event };
   delete content.stateHash;
@@ -26,13 +26,13 @@ const reference = (config, path) => ({
   path,
   sha256: fileHash(config.root, path),
 });
-const receipt = (event) => ({
-  path: journalPath,
+const receipt = (config, event) => ({
+  path: `${runtimePath(config)}/events.jsonl`,
   sequence: event.sequence,
   sha256: digest(event),
 });
-const nativeField = (event, field) =>
-  event[field] === null ? null : { ...receipt(event), field };
+const nativeField = (config, event, field) =>
+  event[field] === null ? null : { ...receipt(config, event), field };
 const resultReferences = (files, evidence, field) =>
   Object.fromEntries(
     Object.entries(files).map(([name, file]) => [
@@ -56,7 +56,7 @@ function retained(config, ref) {
   ensure(
     ref &&
       typeof ref.path === 'string' &&
-      ref.path.startsWith(`${runtime}/`) &&
+      ref.path.startsWith(`${runtimePath(config)}/`) &&
       /^[a-f0-9]{64}$/u.test(ref.sha256),
     'Malformed execution history evidence reference',
   );
@@ -147,12 +147,29 @@ function checkEvidence(config, lease, event) {
 export function executionFacts(config, events) {
   const shells = new Map();
   const checks = new Map();
+  const decisions = [];
   let cutoff = { sequence: 0, timestamp: null };
   for (const event of events) {
+    if (event.kind === 'condition-decided') {
+      const decision = event.decision;
+      ensure(
+        decision?.visitId === event.visitId &&
+          typeof decision.value === 'boolean' &&
+          typeof decision.rationale === 'string' &&
+          decision.rationale.trim() &&
+          config.steps.some(
+            (step) =>
+              step.condition?.id === decision.condition &&
+              step.condition.expression === decision.expression,
+          ),
+        'Malformed condition decision evidence',
+      );
+      decisions.push({ ...decision, receipt: receipt(config, event) });
+    }
     if (
       (['tool-pre', 'tool-post'].includes(event.kind) &&
         event.tool === 'Bash') ||
-      ['check-reserved', 'check'].includes(event.kind)
+      ['check-reserved', 'check', 'condition-decided'].includes(event.kind)
     )
       cutoff = { sequence: event.sequence, timestamp: event.timestamp };
     if (
@@ -175,7 +192,7 @@ export function executionFacts(config, events) {
           input: event.input,
           receiptState: event.denied ? 'denied' : 'pending',
           denied: event.denied,
-          pre: receipt(event),
+          pre: receipt(config, event),
           post: null,
           nativeEvent: null,
           response: null,
@@ -208,10 +225,10 @@ export function executionFacts(config, events) {
           : event.response === null && event.error === null
             ? 'missing-result'
             : 'received';
-        shell.post = receipt(event);
+        shell.post = receipt(config, event);
         shell.nativeEvent = event.nativeEvent;
-        shell.response = nativeField(event, 'response');
-        shell.error = nativeField(event, 'error');
+        shell.response = nativeField(config, event, 'response');
+        shell.error = nativeField(config, event, 'error');
       }
     }
     if (event.kind === 'check-reserved') {
@@ -225,8 +242,9 @@ export function executionFacts(config, events) {
           lease.root === config.root &&
           lease.configHash === config.configHash &&
           Object.hasOwn(config.checks, lease.check) &&
-          lease.path === `${runtime}/checks/${lease.id}.json` &&
-          lease.rawPath === `${runtime}/checks/${lease.id}.raw.json`,
+          lease.path === `${runtimePath(config)}/checks/${lease.id}.json` &&
+          lease.rawPath ===
+            `${runtimePath(config)}/checks/${lease.id}.raw.json`,
         'Malformed configured check reservation',
       );
       const check = config.checks[lease.check];
@@ -240,7 +258,7 @@ export function executionFacts(config, events) {
         receiptState: 'pending',
         outcome: null,
         exitCode: null,
-        reservation: receipt(event),
+        reservation: receipt(config, event),
         lease,
         evidence: null,
       });
@@ -280,14 +298,14 @@ export function executionFacts(config, events) {
           evidenceRef,
           'previousResults',
         ),
-        finalized: receipt(event),
+        finalized: receipt(config, event),
       });
     }
   }
   return {
     version: 1,
     runId: config.runId,
-    source: journalPath,
+    source: `${runtimePath(config)}/events.jsonl`,
     cutoff,
     interpretation:
       'Shell invocations are native tool receipts, not additional configured checks. No underlying process status is inferred from shell command text or response text. Pending receipts and reservations do not establish completion.',
@@ -299,6 +317,9 @@ export function executionFacts(config, events) {
       pendingChecks: [...checks.values()].filter((check) => !check.evidence)
         .length,
     },
+    ...(config.steps.some((step) => step.condition)
+      ? { conditionDecisions: decisions }
+      : {}),
     shellInvocations: [...shells.values()],
     configuredChecks: [...checks.values()],
   };
@@ -330,6 +351,17 @@ export function historyMarkdown(facts, paths = historyPaths) {
     '',
     `Shell invocations: ${facts.counts.shellInvocations}. Configured checks: ${facts.counts.configuredChecks} (${facts.counts.finalizedChecks} finalized, ${facts.counts.pendingChecks} pending). These counts must not be added as a test total.`,
     '',
+    ...(facts.conditionDecisions?.length
+      ? [
+          '### Recorded condition decisions',
+          '',
+          ...facts.conditionDecisions.map(
+            (decision) =>
+              `- ${cell(decision.visitId)} / ${cell(decision.condition)} = ${decision.value}: ${preview(decision.rationale)} (journal event ${decision.receipt.sequence}; agent judgment, not a native skill activation or test result).`,
+          ),
+          '',
+        ]
+      : []),
     '### Native Bash invocations',
     '',
     '| ID / visit | Receipt | Command preview | Native evidence |',
@@ -357,7 +389,7 @@ export function validateHistory(config, state, events) {
       state.executionHistory.journalHash === journalHash(events),
     'Execution history journal integrity mismatch',
   );
-  for (const [key, path] of Object.entries(historyPaths)) {
+  for (const [key, path] of Object.entries(historyPathsFor(config))) {
     ensure(
       state.executionHistory[key]?.path === path,
       'Malformed generated history path',
@@ -383,7 +415,7 @@ export function validateHistory(config, state, events) {
       facts,
     ) &&
       retained(config, state.executionHistory.markdown).toString('utf8') ===
-        historyMarkdown(facts),
+        historyMarkdown(facts, historyPathsFor(config)),
     'Generated execution history does not match retained evidence',
   );
   for (const visit of state.history) {
@@ -395,7 +427,7 @@ export function validateHistory(config, state, events) {
     ]) {
       ensure(
         visit.executionHistory[key]?.path ===
-          `${runtime}/reports/${visit.id}.${extension}`,
+          `${runtimePath(config)}/reports/${visit.id}.${extension}`,
         'Malformed report history path',
       );
       retained(config, visit.executionHistory[key]);
@@ -410,16 +442,16 @@ export function persistHistory(config, state, events, materialize) {
     state.executionHistory.journalHash = journalHash(events);
     return;
   }
-  const markdown = historyMarkdown(facts);
+  const markdown = historyMarkdown(facts, historyPathsFor(config));
   const values = { json: JSON.stringify(facts, null, 2) + '\n', markdown };
-  for (const [key, path] of Object.entries(historyPaths)) {
+  for (const [key, path] of Object.entries(historyPathsFor(config))) {
     if (!state.executionHistory?.[key])
       ensure(
         !existsSync(safePath(config.root, path)),
         `Unowned generated history path: ${path}`,
       );
   }
-  for (const [key, path] of Object.entries(historyPaths)) {
+  for (const [key, path] of Object.entries(historyPathsFor(config))) {
     const previous = state.executionHistory?.[key];
     if (previous?.sha256 === hash(values[key])) continue;
     if (key === 'json') writeJSON(config.root, path, facts, !previous);
@@ -430,8 +462,8 @@ export function persistHistory(config, state, events, materialize) {
   }
   state.executionHistory = {
     journalHash: journalHash(events),
-    json: reference(config, historyPaths.json),
-    markdown: reference(config, historyPaths.markdown),
+    json: reference(config, historyPathsFor(config).json),
+    markdown: reference(config, historyPathsFor(config).markdown),
   };
 }
 
@@ -445,9 +477,9 @@ export function attachHistory(tx, artifacts) {
     timestamp: new Date().toISOString(),
   };
   const paths = {
-    json: `${runtime}/reports/${state.visit.id}.json`,
-    markdown: `${runtime}/reports/${state.visit.id}.md`,
-    narrative: `${runtime}/reports/${state.visit.id}.narrative.json`,
+    json: `${runtimePath(config)}/reports/${state.visit.id}.json`,
+    markdown: `${runtimePath(config)}/reports/${state.visit.id}.md`,
+    narrative: `${runtimePath(config)}/reports/${state.visit.id}.narrative.json`,
   };
   const markdown = historyMarkdown(facts, paths);
   const narrative = Buffer.from(artifacts[report].base64, 'base64');

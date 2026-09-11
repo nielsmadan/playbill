@@ -7,7 +7,7 @@ import {
   fileHash,
   hash,
   hashes,
-  runtime,
+  runtimePath,
   safePath,
   same,
   snapshot,
@@ -43,8 +43,8 @@ export function reserveCheck(tx, checkName) {
     check: checkName,
     inputs: hashes(config.root, inputs),
     reservedAt: new Date().toISOString(),
-    rawPath: `${runtime}/checks/${id}.raw.json`,
-    path: `${runtime}/checks/${id}.json`,
+    rawPath: `${runtimePath(config)}/checks/${id}.raw.json`,
+    path: `${runtimePath(config)}/checks/${id}.json`,
   };
   state.visit.checkLease = lease;
   state.visit.check = null;

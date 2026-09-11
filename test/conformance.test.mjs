@@ -61,7 +61,7 @@ async function fixture(
   t.after(() => rmSync(cwd, { recursive: true, force: true }));
   const packageRoot = bundled ? join(cwd, 'package') : root;
   if (bundled)
-    for (const path of ['dist', 'adapters'])
+    for (const path of ['dist', 'adapters', 'scripts/coordinator'])
       cpSync(join(root, path), join(packageRoot, path), { recursive: true });
   if (bundled) write(join(packageRoot, 'package.json'), '{"type":"module"}');
   const launch = subdirectory ? join(cwd, 'nested') : cwd;

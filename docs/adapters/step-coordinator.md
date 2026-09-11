@@ -1,5 +1,8 @@
 # In-session coordinator experiment
 
+This page records the historical prototype trials. The current installed behavior
+is documented in [Installed native coordinator](installed-coordinator.md).
+
 The final tested revision completed all five stages across a real pause, read-only status request, native compaction and generic resume. Its saved visit, history and artifact bytes survived. Full adherence remains incomplete: the model omitted a test execution from its final report, and an independent retry probe still failed.
 
 This is an opt-in prototype in `scripts/coordinator/`, approved for iteration on 2026-09-07. The shipped adapters, default workflows and ten bundled technique skills are unchanged.

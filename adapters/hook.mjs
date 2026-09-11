@@ -22,8 +22,8 @@ export async function hook(host) {
     const input = JSON.parse(
       new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)),
     );
-    if (input?.hook_event_name === 'UserPromptSubmit')
-      event = 'UserPromptSubmit';
+    if (typeof input?.hook_event_name === 'string')
+      event = input.hook_event_name;
     const adapter = await import(`../dist/${host}.js`);
     const output = await (host === 'claude'
       ? adapter.handleClaudeEvent(input)
@@ -32,13 +32,27 @@ export async function hook(host) {
   } catch (error) {
     const context = `Playbill adapter could not start. Check hook input and run npm ci && npm run build in the plugin directory. ${String(error.message).slice(0, 2000)}`;
     stdout.write(
-      JSON.stringify({
-        hookSpecificOutput: {
-          hookEventName: event,
-          additionalContext: context,
-        },
-        ...(host === 'claude' ? { systemMessage: context } : {}),
-      }) + '\n',
+      JSON.stringify(
+        event === 'Stop'
+          ? { decision: 'block', reason: context }
+          : event === 'SessionEnd'
+            ? {}
+            : event === 'PreToolUse'
+              ? {
+                  hookSpecificOutput: {
+                    hookEventName: event,
+                    permissionDecision: 'deny',
+                    permissionDecisionReason: context,
+                  },
+                }
+              : {
+                  hookSpecificOutput: {
+                    hookEventName: event,
+                    additionalContext: context,
+                  },
+                  ...(host === 'claude' ? { systemMessage: context } : {}),
+                },
+      ) + '\n',
     );
   } finally {
     clearTimeout(timer);

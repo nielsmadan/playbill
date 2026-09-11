@@ -9,7 +9,7 @@ import {
   fileHash,
   hash,
   hashes,
-  runtime,
+  runtimePath,
   safePath,
   same,
   snapshot,
@@ -18,7 +18,7 @@ import {
 import { executionFacts, journalHash } from './history.mjs';
 import { conversationCommand, released } from './conversation.mjs';
 
-const directory = `${runtime}/report-reviews`;
+const directory = (config) => `${runtimePath(config)}/report-reviews`;
 const digest = (value) => hash(JSON.stringify(value));
 const quote = (value) => `'${value.replaceAll("'", "'\\''")}'`;
 const nonempty = (value) =>
@@ -34,7 +34,7 @@ const reference = (config, path) => ({
 });
 const retained = (config, ref) => {
   ensure(
-    ref?.path?.startsWith(`${directory}/`) &&
+    ref?.path?.startsWith(`${directory(config)}/`) &&
       /^[a-f0-9]{64}$/u.test(ref.sha256),
     'Malformed report review reference',
   );
@@ -189,7 +189,7 @@ export function requireReportReview(tx, artifacts) {
     evidence,
     evidenceHash: digest(evidence),
   };
-  const path = `${directory}/${id}.request.json`;
+  const path = `${directory(config)}/${id}.request.json`;
   writeJSON(config.root, path, request, true);
   gate ??= {
     visitId: state.visit.id,
@@ -344,7 +344,7 @@ export function applyReviewDecision(tx, path) {
   const gate = state.reportReview;
   ensure(gate, 'No report review request');
   const bytes = readFileSync(path);
-  const submissionPath = `${directory}/${randomUUID()}.submission.json`;
+  const submissionPath = `${directory(config)}/${randomUUID()}.submission.json`;
   writeJSON(
     config.root,
     submissionPath,
@@ -368,7 +368,7 @@ export function applyReviewDecision(tx, path) {
   } catch (error) {
     stale = error.message;
   }
-  const decisionPath = `${directory}/${request.id}.decision.json`;
+  const decisionPath = `${directory(config)}/${request.id}.decision.json`;
   writeJSON(config.root, decisionPath, envelope, true);
   const accepted = decision.verdict === 'accept' && !stale;
   gate.decisions.push({

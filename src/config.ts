@@ -35,8 +35,55 @@ export function validateConfig(value: unknown, path = 'config'): Config {
   )) {
     identifier(key, `${path}.workflows.${key}`);
     const at = `${path}.workflows.${key}`;
-    const workflow = record(value, at, ['entry', 'priority', 'triggers']);
+    const workflow = record(value, at, [
+      'entry',
+      'priority',
+      'triggers',
+      'coordination',
+    ]);
     const policy: WorkflowPolicy = {};
+    if (workflow.coordination !== undefined) {
+      const coordination = record(workflow.coordination, `${at}.coordination`, [
+        'enabled',
+        'artifact_scope',
+        'redirect_threshold',
+        'ask_on_redirect',
+        'report_artifact',
+      ]);
+      policy.coordination = {};
+      if (coordination.report_artifact !== undefined)
+        policy.coordination.report_artifact = identifier(
+          coordination.report_artifact,
+          `${at}.coordination.report_artifact`,
+        );
+      if (coordination.redirect_threshold !== undefined)
+        policy.coordination.redirect_threshold = integer(
+          coordination.redirect_threshold,
+          `${at}.coordination.redirect_threshold`,
+          2,
+          20,
+        );
+      if (coordination.ask_on_redirect !== undefined) {
+        if (typeof coordination.ask_on_redirect !== 'boolean')
+          fail(
+            'VALUE',
+            `${at}.coordination.ask_on_redirect`,
+            'Expected a boolean.',
+          );
+        policy.coordination.ask_on_redirect = coordination.ask_on_redirect;
+      }
+      if (coordination.enabled !== undefined) {
+        if (typeof coordination.enabled !== 'boolean')
+          fail('VALUE', `${at}.coordination.enabled`, 'Expected a boolean.');
+        policy.coordination.enabled = coordination.enabled;
+      }
+      if (coordination.artifact_scope !== undefined)
+        policy.coordination.artifact_scope = choice(
+          coordination.artifact_scope,
+          `${at}.coordination.artifact_scope`,
+          ['project', 'run'],
+        );
+    }
     if (workflow.entry !== undefined)
       policy.entry = choice(workflow.entry, `${at}.entry`, [
         'auto',
@@ -109,6 +156,11 @@ export function mergeConfig(machine: unknown, project: unknown): Config {
   const workflows = { ...base.workflows };
   for (const [id, policy] of Object.entries(override.workflows)) {
     workflows[id] = { ...workflows[id], ...policy };
+    if (policy.coordination !== undefined)
+      workflows[id].coordination = {
+        ...base.workflows[id]?.coordination,
+        ...policy.coordination,
+      };
     if (policy.triggers !== undefined)
       workflows[id].triggers = {
         ...base.workflows[id]?.triggers,

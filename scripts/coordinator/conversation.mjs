@@ -1,7 +1,17 @@
+import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath, URL } from 'node:url';
-import { ensure, hash, hashes, same, snapshot, validPath } from './files.mjs';
+import {
+  ensure,
+  hash,
+  hashes,
+  same,
+  snapshot,
+  validPath,
+  commandWords,
+  skillFile,
+} from './files.mjs';
 import { checkIdle } from './check.mjs';
 import { refreshAcceptedReview } from './report-review.mjs';
 import { validateWorkflowPaths } from './config.mjs';
@@ -20,22 +30,23 @@ export const conversationSummary = (state) => {
 
 export function conversationCommand(config, command) {
   if (!config.conversation || typeof command !== 'string') return false;
-  const match =
-    /^('[^']+'|"[^"$`\\]+"|[^\s'"|&;<>`$\\()]+)\s+('[^']+'|"[^"$`\\]+"|[^\s'"|&;<>`$\\()]+)\s+('[^']+'|"[^"$`\\]+"|[^\s'"|&;<>`$\\()]+)\s+(?:pause|resume|exit|intent\s+[1-9][0-9]*\s+(?:question|redirect|return|replace))\s*$/u.exec(
-      command,
-    );
-  if (!match) return false;
-  const unquote = (value) =>
-    /^["']/u.test(value) ? value.slice(1, -1) : value;
-  const executable = unquote(match[1]);
-  const cli = resolve(config.root, unquote(match[2]));
+  const words = commandWords(command);
+  if (!words) return false;
+  const [executable, cliPath, configPath, action, turn, kind] = words;
+  const control =
+    (words.length === 4 && ['pause', 'resume', 'exit'].includes(action)) ||
+    (words.length === 6 &&
+      action === 'intent' &&
+      /^[1-9][0-9]*$/u.test(turn) &&
+      kinds.includes(kind));
   return (
+    control &&
     (executable === 'node' || executable === process.execPath) &&
     [
       resolve(dirname(config.configPath), 'cli.mjs'),
       fileURLToPath(new URL('./cli.mjs', import.meta.url)),
-    ].includes(cli) &&
-    resolve(config.root, unquote(match[3])) === config.configPath
+    ].includes(resolve(config.root, cliPath)) &&
+    resolve(config.root, configPath) === config.configPath
   );
 }
 
@@ -96,7 +107,9 @@ export function validateConversation(state, config) {
           !Array.isArray(value.suspension.files) &&
           Object.entries(value.suspension.files).every(
             ([path, file]) =>
-              validPath(path) &&
+              (validPath(path) ||
+                (path.startsWith('skill:') &&
+                  Object.hasOwn(config.nativeSkills ?? {}, path.slice(6)))) &&
               (file === null ||
                 /^[a-f0-9]{64}$/u.test(file) ||
                 typeof file?.error === 'string'),
@@ -137,7 +150,15 @@ export function conversationContext(tx, prefix) {
     return `${protocol}\nOriginal workflow paused; follow the current user request. Resume only on user return. Present a newly returned CLI question once; when no question is returned, do not repeat an earlier choice. Explicit fallback: ${prefix} resume or ${prefix} exit.`;
   if (state.readOnlyTurn)
     return `${protocol}\nAnswer the related question read-only; preserve the current visit and allow this turn to stop.`;
-  return protocol;
+  return `${protocol}\nA user-requested pause or wait for input or authorization takes precedence over workflow progression. At that boundary, run ${prefix} pause before recording another condition decision or completing another visit. Retain the current visit until the user returns or authorizes continuation.`;
+}
+
+function frozenHash(config, path) {
+  if (path.startsWith('skill:'))
+    return hash(
+      readFileSync(skillFile(config, config.nativeSkills[path.slice(6)])),
+    );
+  return snapshot(config.root, path)?.sha256 ?? null;
 }
 
 function frozenFiles(config, state) {
@@ -146,7 +167,7 @@ function frozenFiles(config, state) {
     ...new Set([
       ...config.sourcePaths,
       ...Object.keys(config.verificationHashes),
-      ...Object.values(config.nativeSkills ?? {}),
+      ...Object.keys(config.nativeSkills ?? {}).map((id) => `skill:${id}`),
       ...step.consumes,
       ...step.produces,
       ...(state.visit.check ? [state.visit.check.path] : []),
@@ -155,7 +176,7 @@ function frozenFiles(config, state) {
   return Object.fromEntries(
     paths.map((path) => {
       try {
-        return [path, snapshot(config.root, path)?.sha256 ?? null];
+        return [path, frozenHash(config, path)];
       } catch (error) {
         return [path, { error: error.message }];
       }
@@ -210,8 +231,7 @@ export function resumeConversation(tx) {
     );
     const changed = Object.entries(frozen.files)
       .filter(
-        ([path, file]) =>
-          file?.error || (snapshot(config.root, path)?.sha256 ?? null) !== file,
+        ([path, file]) => file?.error || frozenHash(config, path) !== file,
       )
       .map(([path]) => path);
     if (changed.length) {

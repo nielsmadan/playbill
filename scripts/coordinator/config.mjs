@@ -1,7 +1,7 @@
 import { readFileSync, realpathSync } from 'node:fs';
 import { createPublicKey } from 'node:crypto';
 import { isAbsolute, resolve } from 'node:path';
-import { ensure, hash, safePath, validPath } from './files.mjs';
+import { ensure, hash, safePath, skillFile, validPath } from './files.mjs';
 
 const object = (value) =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -28,6 +28,18 @@ export function configuration(path) {
   );
   config.root = realpathSync(config.root);
   ensure(identifier(config.runId), 'Invalid runId');
+  if (config.runtime !== undefined)
+    ensure(
+      validPath(config.runtime) &&
+        config.runtime.startsWith('.playbill/coordinator/') &&
+        !config.runtime.endsWith('/'),
+      'Invalid runtime path',
+    );
+  ensure(
+    config.installedSkills === undefined ||
+      typeof config.installedSkills === 'boolean',
+    'Invalid installedSkills',
+  );
   ensure(bounded(config.maxTransitions, 1000), 'Invalid maxTransitions');
   config.maxStopBlocks ??= 3;
   ensure(bounded(config.maxStopBlocks, 20), 'Invalid maxStopBlocks');
@@ -96,7 +108,7 @@ export function configuration(path) {
       object(step) &&
         identifier(step.id) &&
         text(step.title) &&
-        text(step.skill) &&
+        (step.condition !== undefined || text(step.skill)) &&
         text(step.instruction),
       'Invalid step',
     );
@@ -110,7 +122,28 @@ export function configuration(path) {
       step.check === undefined || Object.hasOwn(config.checks, step.check),
       'Unknown step check',
     );
-    if (step.next !== undefined && step.next !== null) {
+    if (step.condition !== undefined) {
+      ensure(
+        object(step.condition) &&
+          identifier(step.condition.id) &&
+          text(step.condition.expression) &&
+          step.consumes.length === 0 &&
+          step.produces.length === 0 &&
+          !step.skill &&
+          !step.check,
+        'Invalid condition step',
+      );
+      ensure(
+        object(step.next) &&
+          Object.keys(step.next).length === 2 &&
+          ['true', 'false'].every(
+            (key) =>
+              Object.hasOwn(step.next, key) &&
+              (step.next[key] === null || ids.has(step.next[key])),
+          ),
+        'Invalid condition successors',
+      );
+    } else if (step.next !== undefined && step.next !== null) {
       if (typeof step.next === 'string')
         ensure(ids.has(step.next), 'Unknown successor');
       else
@@ -138,12 +171,33 @@ export function configuration(path) {
     (check) => check.resultFiles,
   );
   if (config.nativeSkills !== undefined) {
-    const skills = [...new Set(config.steps.map((step) => step.skill))];
+    const skills = [
+      ...new Set(
+        config.steps
+          .filter((step) => !step.condition)
+          .map((step) => step.skill),
+      ),
+    ];
     ensure(
       object(config.nativeSkills) &&
         Object.keys(config.nativeSkills).length === skills.length &&
-        skills.every((skill) => validPath(config.nativeSkills[skill])),
-      'Invalid nativeSkills; map every step skill to a relative skill file',
+        skills.every(
+          (skill) =>
+            validPath(config.nativeSkills[skill]) ||
+            (config.installedSkills &&
+              text(config.nativeSkills[skill]) &&
+              isAbsolute(config.nativeSkills[skill])),
+        ),
+      'Invalid nativeSkills; map every step skill to a validated skill file',
+    );
+  }
+  if (config.nativeInvocations !== undefined) {
+    ensure(
+      object(config.nativeInvocations) &&
+        config.steps
+          .filter((step) => !step.condition)
+          .every((step) => text(config.nativeInvocations[step.skill])),
+      'Invalid nativeInvocations',
     );
   }
   if (config.executionHistory !== undefined) {
@@ -209,10 +263,11 @@ export function configuration(path) {
 }
 
 export function validateWorkflowPaths(config) {
+  for (const path of Object.values(config.nativeSkills ?? {}))
+    skillFile(config, path);
   for (const path of [
     ...config.sourcePaths,
     ...Object.keys(config.verificationHashes),
-    ...Object.values(config.nativeSkills ?? {}),
     ...config.steps.flatMap((step) => [...step.consumes, ...step.produces]),
     ...Object.values(config.checks).flatMap((check) => check.resultFiles),
   ])

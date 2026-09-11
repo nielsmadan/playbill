@@ -2,8 +2,9 @@
 
 M1 defines version 1 of the configuration and pipeline formats. The shared Node
 library validates declarations and renders instructions. The model carries out
-those instructions through its harness. There is no workflow runner, expression
-evaluator, process supervisor, or runtime sandbox in this package. Successful
+those instructions through its harness. Optional native coordination tracks visits,
+receipts, artifacts, and recorded condition decisions; it does not evaluate natural
+language itself or provide a runtime sandbox. Successful
 validation does not establish model compliance, artifact existence/content,
 actual model capability, or review quality. See the frozen [M0 findings](spikes/2026-09-05-m0-findings.md).
 
@@ -68,6 +69,37 @@ does not necessarily contain the first user request.
 Glob matching is bounded by pattern and path length. `?` consumes one Unicode
 code point. Trailing and repeated whole-segment globstars may consume no segments:
 `src/**` and `src/**/**` both match `src` as well as its descendants.
+
+## Native coordination policy
+
+```toml
+[workflows.debug.coordination]
+enabled = true
+artifact_scope = "run"
+report_artifact = "report"
+redirect_threshold = 2
+ask_on_redirect = true
+```
+
+Coordination is optional and used by Claude/Codex only. Other hosts continue to
+render the same YAML. `enabled` defaults to false, `artifact_scope` to `project`,
+`redirect_threshold` to 2 (integer range 2–20), and `ask_on_redirect` to true.
+`report_artifact` optionally names a declared artifact ID with exactly one terminal
+producer and no consumers. Completion appends generated execution history to that
+artifact and preserves its original narrative. Signed external report review is
+not required by the installed policy. Unknown fields and invalid types fail
+validation. Coordination fields merge individually across configuration layers.
+
+Bundled debug enables coordination, run scope and its report artifact. Disabling
+coordination in a project override restores rendered delivery for fresh entries.
+Custom workflows default to project artifact paths. Run scope relocates each
+declared artifact into a unique run directory; existing pipeline inputs cannot be
+relocated. The compiler accepts steps, `if`, and bounded `while`, including an
+initial false loop condition. Each condition requires a current visit token,
+condition identity, boolean and rationale before advancing. Unsupported control
+flow, collection artifacts, fresh-agent requirements and graphs exceeding 100
+lowered nodes produce a coordination diagnostic. See the
+[installed coordinator contract](adapters/installed-coordinator.md).
 
 ## Pipelines
 

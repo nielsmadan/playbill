@@ -63,27 +63,37 @@ export class AdapterSession {
     this.selected = this.store.read().selected;
   }
 
+  evaluate(
+    event: RuntimeRequest['event'],
+    inventory: NativeSkill[],
+    prompt?: string,
+  ): RuntimeResult {
+    return invokeRuntime(
+      {
+        version: 1,
+        cwd: this.cwd,
+        event,
+        inventory,
+        discovery: this.discovery,
+        ...(this.host === 'codex' ? { coordinationHost: 'codex' } : {}),
+        ...(prompt !== undefined ? { prompt } : {}),
+        ...(event === 'restore' && this.selected
+          ? { resumeWorkflow: this.selected }
+          : {}),
+      },
+      this.env.PLAYBILL_NODE ??
+        (this.host === 'opencode' ? 'node' : process.execPath),
+    );
+  }
+
   run(
     event: RuntimeRequest['event'],
     inventory: NativeSkill[],
     prompt?: string,
+    evaluated?: RuntimeResult,
   ): string {
     try {
-      const result = invokeRuntime(
-        {
-          version: 1,
-          cwd: this.cwd,
-          event,
-          inventory,
-          discovery: this.discovery,
-          ...(prompt !== undefined ? { prompt } : {}),
-          ...(event === 'restore' && this.selected
-            ? { resumeWorkflow: this.selected }
-            : {}),
-        },
-        this.env.PLAYBILL_NODE ??
-          (this.host === 'opencode' ? 'node' : process.execPath),
-      );
+      const result = evaluated ?? this.evaluate(event, inventory, prompt);
       if (
         this.host !== 'codex' &&
         event === 'prompt' &&

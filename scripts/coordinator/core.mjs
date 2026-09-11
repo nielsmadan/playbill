@@ -1,8 +1,11 @@
-import { existsSync, readFileSync, realpathSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { fileURLToPath, URL } from 'node:url';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { validateWorkflowPaths } from './config.mjs';
 import {
   ensure,
+  runtimePath,
+  withinRoot,
   fileHash,
   hashes,
   relativePath,
@@ -17,12 +20,12 @@ import {
   finalizeCheck,
   reserveCheck,
 } from './check.mjs';
-import { runtime, transaction } from './store.mjs';
+import { transaction } from './store.mjs';
 import {
   attachHistory,
   executionFacts,
   historyMarkdown,
-  historyPaths,
+  historyPathsFor,
 } from './history.mjs';
 import {
   applyReviewDecision,
@@ -51,7 +54,7 @@ const sourceAllowed = (tx) =>
   Boolean(tx.state.visit.activation) &&
   stepOf(tx).allowSourceWrites;
 const commandPrefix = (config) =>
-  `node ${quote(join(dirname(config.configPath), 'cli.mjs'))} ${quote(config.configPath)}`;
+  `node ${quote(fileURLToPath(new URL('./cli.mjs', import.meta.url)))} ${quote(config.configPath)}`;
 const quote = (value) => `'${value.replaceAll("'", "'\\''")}'`;
 
 export function context(tx) {
@@ -70,11 +73,26 @@ export function context(tx) {
 function workflowContext(tx, prefix) {
   const { state, config } = tx;
   const history = config.executionHistory
-    ? `\nGenerated execution facts: ${historyPaths.json}; ${historyPaths.markdown}. Read-only history: ${prefix} history. Use the CLI for current retained receipts; generated snapshots refresh at workflow boundaries. Consult these retained receipts before summarizing executions; shell invocations and configured checks are separate. Completing ${config.executionHistory.reportArtifact} appends a generated snapshot and preserves your narrative for separate accuracy review.`
+    ? `\nGenerated execution facts: ${historyPathsFor(config).json}; ${historyPathsFor(config).markdown}. Read-only history: ${prefix} history. Use the CLI for current retained receipts; generated snapshots refresh at workflow boundaries. Consult these retained receipts before summarizing executions; shell invocations and configured checks are separate. Completing ${config.executionHistory.reportArtifact} appends a generated snapshot and preserves your narrative for separate accuracy review.`
     : '';
   if (state.status === 'done')
     return `Coordinator ${config.runId}: completed ${state.history.length} visits. Report the retained results and any repair limitations.${history}`;
   const step = stepOf(tx);
+  if (step.condition && state.status === 'active')
+    return [
+      `Coordinator ${config.runId}: current decision visit ${state.visit.id}.`,
+      config.introduction ?? '',
+      `Project root: ${config.root}.`,
+      `Condition ${step.condition.id}: ${step.condition.expression}`,
+      step.instruction,
+      state.visit.decision
+        ? `This decision is already recorded. After repairing the transition failure, complete it: ${prefix} complete ${state.visit.id}.`
+        : `Evaluate from the current evidence, then record this exact visit and condition with a boolean and a nonempty rationale: ${prefix} decide ${state.visit.id} ${step.condition.id} true|false 'evidence and reasoning'.`,
+      'This decision advances only its selected branch. It does not activate a skill or establish that tests passed.',
+      history,
+    ]
+      .filter(Boolean)
+      .join('\n');
   const review = state.reportReview;
   if (review?.status === 'pending' || review?.status === 'unresolved')
     return `Coordinator ${config.runId} is paused at ${state.visit.id} (${step.title}). Report review ${review.status}; ${review.decisions.length}/2 decisions retained. ${review.status === 'pending' ? 'Await the independent controller decision; this visit cannot resume while review is pending.' : 'The review limit is exhausted with an unresolved outcome; preserve all drafts and findings for intervention.'} Read-only review: ${prefix} review.${history}`;
@@ -95,10 +113,18 @@ function workflowContext(tx, prefix) {
     [
       `Coordinator ${config.runId}: current visit ${state.visit.id}, ${step.title}.`,
       continuation,
-      `Technique: ${step.skill}. ${state.visit.activation ? 'Native activation recorded; continue this visit.' : config.nativeSkills ? `Read the complete native skill file with this exact command before completing this visit: cat ${quote(config.nativeSkills[step.skill])}` : 'Invoke this native Skill before completing this visit.'}`,
+      config.introduction ?? '',
+      `Project root: ${config.root}. Resolve artifact paths from this root.`,
+      `Technique: ${step.skill}. ${state.visit.activation ? 'Native activation recorded; continue this visit.' : config.nativeSkills && !config.nativeInvocations ? `Read the complete native skill file with this exact command before completing this visit: cat ${quote(config.nativeSkills[step.skill])}` : `Invoke Skill with skill=${JSON.stringify(config.nativeInvocations?.[step.skill] ?? step.skill)} before completing this visit.`}`,
       step.instruction,
       `Consume: ${step.consumes.join(', ') || '(none)'}. Produce fresh nonempty bytes: ${step.produces.join(', ') || '(none)'}.`,
-      `Source edits: ${step.allowSourceWrites ? 'permitted for this visit' : 'defer until a permitted visit'}.`,
+      ...(config.sourcePaths.length
+        ? [
+            `Source edits: ${step.allowSourceWrites ? 'permitted for this visit' : 'defer until a permitted visit'}.`,
+          ]
+        : [
+            `${Object.keys(config.checks).length ? 'No source-write policy is configured' : 'No project-specific command or source-write policy is configured'}; follow the request authorization and declared agent contract.`,
+          ]),
       ...(step.check ? [`Capture the configured check: ${prefix} check.`] : []),
       `Complete this exact visit: ${prefix} complete ${state.visit.id}.`,
       `Status: ${prefix} status.`,
@@ -217,7 +243,12 @@ function complete(tx, token) {
   );
   ensure(!state.visit.completedAt, 'Visit already completed');
   const step = stepOf(tx);
-  ensure(state.visit.activation, 'Missing successful native Skill activation');
+  ensure(
+    step.condition ? state.visit.decision : state.visit.activation,
+    step.condition
+      ? 'Missing recorded condition decision'
+      : 'Missing successful native Skill activation',
+  );
   ensure(
     state.visit.violations.length === 0,
     'Visit has recorded source-write violations; preserve this run for intervention',
@@ -260,14 +291,14 @@ function complete(tx, token) {
   }
   const successor =
     typeof step.next === 'object' && step.next !== null
-      ? step.next[outcome]
+      ? step.next[step.condition ? String(state.visit.decision.value) : outcome]
       : step.next;
   ensure(
     !successor || state.transitions < config.maxTransitions,
     'Transition limit reached; pause for intervention',
   );
   if (!requireReportReview(tx, artifacts)) return;
-  const artifactPath = `${runtime}/artifacts/${state.visit.id}.json`;
+  const artifactPath = `${runtimePath(config)}/artifacts/${state.visit.id}.json`;
   const nextVisit = successor
     ? visit(config, successor, state.nextVisit)
     : null;
@@ -333,7 +364,7 @@ export async function execute(config, command, argument, sessionId) {
           state: tx.state,
           context: context(tx),
           history,
-          markdown: historyMarkdown(history),
+          markdown: historyMarkdown(history, historyPathsFor(config)),
         };
       }
       if (command === 'review-decision') {
@@ -368,7 +399,45 @@ export async function execute(config, command, argument, sessionId) {
         'Read-only status turn; wait for a continuation request',
       );
       observe(tx);
-      if (command === 'complete') complete(tx, argument);
+      if (command === 'decide') {
+        active(tx);
+        checkIdle(tx.state);
+        const step = stepOf(tx);
+        ensure(
+          argument?.visit === tx.state.visit.id,
+          `Stale visit token: expected ${tx.state.visit.id}`,
+        );
+        ensure(
+          step.condition && argument.condition === step.condition.id,
+          'Condition identity mismatch',
+        );
+        ensure(
+          typeof argument.value === 'boolean' &&
+            typeof argument.rationale === 'string' &&
+            argument.rationale.trim().length > 0 &&
+            argument.rationale.length <= 8192,
+          'Condition requires a boolean and a nonempty rationale of at most 8192 characters',
+        );
+        const decision = tx.state.visit.decision;
+        if (decision)
+          ensure(
+            decision.value === argument.value &&
+              decision.rationale === argument.rationale,
+            'Condition decision already recorded; retry with the original value and rationale',
+          );
+        else {
+          tx.state.visit.decision = {
+            visitId: tx.state.visit.id,
+            condition: step.condition.id,
+            expression: step.condition.expression,
+            value: argument.value,
+            rationale: argument.rationale,
+            timestamp: now(),
+          };
+          tx.event('condition-decided', { decision: tx.state.visit.decision });
+        }
+        complete(tx, tx.state.visit.id);
+      } else if (command === 'complete') complete(tx, argument);
       else if (command === 'check') {
         active(tx);
         ensure(
@@ -432,7 +501,12 @@ function guard(tx, event) {
       return 'Check is in flight; wait before another technique activation.';
     if (state.status !== 'active' || state.readOnlyTurn)
       return `Coordinator is ${state.status}; no technique activation now.`;
-    if (input.skill !== stepOf(tx).skill)
+    if (stepOf(tx).condition)
+      return 'Record the current condition decision before activating a technique.';
+    if (
+      input.skill !==
+      (config.nativeInvocations?.[stepOf(tx).skill] ?? stepOf(tx).skill)
+    )
       return `Expected Skill ${stepOf(tx).skill} for visit ${state.visit.id}.`;
     for (const name of stepOf(tx).consumes)
       if (!snapshot(config.root, name)?.nonempty)
@@ -562,7 +636,7 @@ export function handleHook(config, event, { nativeSkillRead } = {}) {
     'Missing native session identity',
   );
   ensure(
-    typeof event.cwd === 'string' && realpathSync(event.cwd) === config.root,
+    typeof event.cwd === 'string' && withinRoot(config.root, event.cwd),
     'Native cwd/root mismatch',
   );
   const supported = [
@@ -581,7 +655,7 @@ export function handleHook(config, event, { nativeSkillRead } = {}) {
     const name = event.hook_event_name;
     if (!tx.state) {
       ensure(
-        name === 'SessionStart',
+        name === 'SessionStart' || name === 'UserPromptSubmit',
         'Coordinator requires native SessionStart',
       );
       initialize(tx, event.session_id);
@@ -591,7 +665,7 @@ export function handleHook(config, event, { nativeSkillRead } = {}) {
     const skillRead = released(state)
       ? null
       : typeof nativeSkillRead === 'function'
-        ? nativeSkillRead()
+        ? nativeSkillRead(stepOf(tx).skill)
         : nativeSkillRead;
     if (name === 'SessionStart') {
       observe(tx);
@@ -750,7 +824,9 @@ export function handleHook(config, event, { nativeSkillRead } = {}) {
       ensure(
         pending?.tool === 'Skill' &&
           pending.visitId === state.visit.id &&
-          pending.input?.skill === stepOf(tx).skill &&
+          pending.input?.skill ===
+            (config.nativeInvocations?.[stepOf(tx).skill] ??
+              stepOf(tx).skill) &&
           event.tool_input?.skill === pending.input.skill,
         'Missing or mismatched native Skill receipt',
       );
@@ -761,12 +837,14 @@ export function handleHook(config, event, { nativeSkillRead } = {}) {
         state.visit.check = null;
         state.visit.activation = {
           visitId: state.visit.id,
-          skill: event.tool_input.skill,
+          skill: stepOf(tx).skill,
+          invocation: event.tool_input.skill,
           toolUseId: event.tool_use_id,
           timestamp: now(),
         };
         tx.event('activated', {
-          skill: event.tool_input.skill,
+          skill: stepOf(tx).skill,
+          invocation: event.tool_input.skill,
           toolUseId: event.tool_use_id,
         });
         return injection(name, context(tx));

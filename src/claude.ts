@@ -1,3 +1,9 @@
+import {
+  CoordinatorSession,
+  hookFailure,
+  nativeEvents,
+} from './coordinator-session.js';
+import type { HookOutput } from '../scripts/coordinator/core.mjs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -46,24 +52,24 @@ export function claudeContext(
   return boundedOutput(context);
 }
 
-export function handleClaudeEvent(
+export async function handleClaudeEvent(
   input: unknown,
   env: NodeJS.ProcessEnv = process.env,
-): ClaudeHookOutput {
+): Promise<HookOutput> {
   let event = 'SessionStart';
   let stateStore: ReturnType<typeof sessionStore> | undefined;
   let warned = false;
   try {
     const data = record(input, 'Claude hook');
     event = text(data.hook_event_name, 'hook_event_name');
-    if (event !== 'SessionStart' && event !== 'UserPromptSubmit')
-      fail(
-        'EVENT',
-        event,
-        'Supported hooks are SessionStart and UserPromptSubmit.',
-      );
+    if (!nativeEvents.includes(event))
+      fail('EVENT', event, 'Unsupported native Claude hook.');
     const cwd = text(data.cwd, 'cwd');
     const session = text(data.session_id, 'session_id');
+    const coordinator = new CoordinatorSession('claude', data, env);
+    const routed = await coordinator.route();
+    if (routed !== undefined) return routed;
+    if (!['SessionStart', 'UserPromptSubmit'].includes(event)) return {};
     const discovery = discoveryFromEnvironment(env);
     discovery.defaultsDir ??= fileURLToPath(
       new URL('../defaults/', import.meta.url),
@@ -98,7 +104,12 @@ export function handleClaudeEvent(
         : {}),
       discovery,
       inventory: inventory.skills,
+      coordinationHost: 'claude',
     });
+    if (result.coordination)
+      return await coordinator.start(result.coordination);
+    if (event === 'UserPromptSubmit' && result.ok && result.selected)
+      coordinator.rendered();
     let warning = '';
     if (inventory.superpowersEvidence && !warned) {
       warning = `Playbill: Superpowers may also supply workflow instructions (${inventory.superpowersEvidence}). Both can coexist; check their workflow choices if they overlap.`;
@@ -139,16 +150,16 @@ export function handleClaudeEvent(
     }
     const context = claudeContext(runtimeFailure(failure));
     return {
-      hookSpecificOutput: { hookEventName: event, additionalContext: context },
-      systemMessage: context,
+      ...hookFailure(event, context),
+      ...(event === 'Stop' ? {} : { systemMessage: context }),
     };
   }
 }
 
 export async function main(): Promise<void> {
-  let output: ClaudeHookOutput;
+  let output: HookOutput;
   try {
-    output = handleClaudeEvent(await readInput());
+    output = await handleClaudeEvent(await readInput());
   } catch (error) {
     const context = claudeContext(runtimeFailure(error));
     output = {
