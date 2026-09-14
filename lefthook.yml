@@ -2,8 +2,10 @@ pre-commit:
   parallel: true
   commands:
     format:
+      glob: '*.{js,jsx,ts,tsx,mjs,json,md,css,html,yml,yaml}'
       run: npx prettier --write {staged_files} && git add {staged_files}
     lint:
+      glob: '*.{js,jsx,ts,tsx,mjs}'
       run: npx eslint {staged_files}
 
 pre-push:
