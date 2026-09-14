@@ -13,6 +13,9 @@ import {
   snapshot,
 } from './suite-observer.mjs';
 
+const ansiPattern = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'gu');
+const withoutAnsi = (value) => value.replace(ansiPattern, '');
+
 export const originalSolution =
   'export function sumUniqueIntegers(values) {\n  if (!Array.isArray(values)) throw new TypeError("Expected an array");\n  return values.filter(Number.isSafeInteger).reduce((sum, value) => sum + value, 0);\n}\n';
 export const observerSource = readFileSync(
@@ -260,10 +263,11 @@ function executionEvidence(fixture, events, uses, result) {
       run,
       `Missing ${failed ? 'failing original reproduction' : 'verification after correction'}: ${observationProtocol.command}`,
     );
-    const output =
+    const output = withoutAnsi(
       typeof run.response.content === 'string'
         ? run.response.content
-        : run.response.content.map((part) => part.text ?? '').join('\n');
+        : run.response.content.map((part) => part.text ?? '').join('\n'),
+    );
     for (const [label, count] of Object.entries({
       tests: 5,
       pass: failed ? 4 : 5,
