@@ -37,7 +37,7 @@
     "scripts/coordinator"
   ],
   "scripts": {
-    "prepare": "lefthook install || true",
+    "prepare": "lefthook install >/dev/null 2>&1 || true",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
