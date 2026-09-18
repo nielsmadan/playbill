@@ -13,11 +13,14 @@ These checks do not establish that the model followed a technique or repaired th
 Use Node 24.x:
 
 ```sh
-npm ci
+npm run setup
 npm run build
 npm run --silent playbill -- validate test/fixtures/coding.yaml --config test/fixtures/config.toml --skill-root test/fixtures/skills
 npm run --silent playbill -- render test/fixtures/coding.yaml --config test/fixtures/config.toml --skill-root test/fixtures/skills
 ```
+
+`npm run setup` installs locked dependencies and Git hooks, then validates the
+local setup with `npm run doctor`.
 
 See [formats, contracts, registry and API](docs/formats.md) for custom pipelines,
 machine/project precedence, and the explicit registry interface. `playbill --help`

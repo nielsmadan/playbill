@@ -37,7 +37,8 @@
     "scripts/coordinator"
   ],
   "scripts": {
-    "prepare": "lefthook install >/dev/null 2>&1 || true",
+    "setup": "npm ci && lefthook install && npm run doctor",
+    "doctor": "test -d node_modules && lefthook validate && test -x \"$(git rev-parse --git-path hooks/pre-commit)\" && test -x \"$(git rev-parse --git-path hooks/pre-push)\" || { echo 'Setup incomplete; run npm run setup' >&2; exit 1; }",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
