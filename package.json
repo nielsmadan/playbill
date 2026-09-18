@@ -57,6 +57,7 @@
     "@opencode-ai/plugin": "1.18.29",
     "@types/node": "24.13.3",
     "eslint": "10.10.0",
+    "lefthook": "2.1.14",
     "prettier": "3.9.6",
     "typescript": "6.0.3",
     "typescript-eslint": "8.69.0"
